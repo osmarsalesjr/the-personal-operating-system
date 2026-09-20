@@ -26,6 +26,10 @@ Princípio central:
 
 A IA não cria compromissos, não escolhe horários e não executa ações no Trello ou Calendar.
 
+Fluxo do Sistema Operacional Pessoal
+
+![MyPos Flow](./images/MyPosFlow.png)
+
 ---
 
 # 2. Trello
@@ -897,3 +901,10 @@ Horários, áreas, preferências e compromissos pertencem à configuração de c
 O Meu POS foi desenvolvido para que a mesma estrutura possa ser utilizada por pessoas com rotinas diferentes.
 
 A estrutura do sistema permanece estável; o conteúdo do POS é individual; e a análise é produzida dinamicamente a partir do contexto fornecido.
+
+---
+
+## 18. Artefatos do Projeto
+
+- Repositório GitHub, [clique aqui.](https://github.com/osmarsalesjr/the-personal-operating-system)
+- Vídeo de Demonstração do MEU POS, [link YouTube.](https://www.youtube.com/watch?v=uu2ndE3wzlg)

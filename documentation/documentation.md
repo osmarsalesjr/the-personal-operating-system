@@ -14,6 +14,8 @@ A solução atualmente utiliza:
 
 A arquitetura foi inicialmente pensada como um template reutilizável. A rotina utilizada no desenvolvimento representa uma **configuração de referência**, e não uma regra fixa da automação.
 
+![MyPos Flow](https://1drv.ms/i/c/c417189aeed0f9d1/IQSoZ2o0w2ELR7BGx59XCESWAeXT5cersyxK9fvV1wEqC0I?width=1483&height=293)
+
 ### Princípio central
 
 > **O template é fixo. A configuração é individual. A análise é adaptativa.**
@@ -1324,3 +1326,10 @@ O objetivo é criar uma estrutura na qual:
 > **o template seja fixo, a configuração seja individual e a análise seja adaptativa.**
 
 A solução utiliza automação para reduzir trabalho repetitivo, IA para interpretar informações e o usuário como responsável pelas decisões sobre sua própria rotina.
+
+---
+
+# 27. Artefatos do Projeto
+
+- Repositório GitHub, [clique aqui.](https://github.com/osmarsalesjr/the-personal-operating-system)
+- Vídeo de Demonstração do MEU POS, [link YouTube.](https://www.youtube.com/watch?v=uu2ndE3wzlg)
