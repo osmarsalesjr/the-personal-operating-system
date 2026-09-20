@@ -2,207 +2,219 @@
 
 ## 1. Visão geral
 
-O **Meu POS (Sistema Operacional Pessoal)** é um template de organização pessoal desenvolvido para ajudar o usuário a organizar tarefas, projetos, compromissos e diferentes áreas da vida em um fluxo simples de captura, organização, planejamento, execução e revisão.
+O **Meu POS (Sistema Operacional Pessoal)** é um sistema de organização pessoal desenvolvido para centralizar tarefas, projetos, rotinas e informações de contexto e, a partir desses dados, gerar uma análise assistida por Inteligência Artificial.
 
-A solução utiliza inicialmente:
+A solução atualmente utiliza:
 
-- **Trello** — gestão de tarefas, projetos e configuração do usuário;
-- **Google Calendar** — compromissos e bloqueios de horário;
-- **Make** — automação e integração;
-- **IA** — análise, planejamento e recomendações, com **Gemini** como candidato inicial.
+- **Trello** — organização das tarefas, projetos, estados e configuração do usuário;
+- **Google Calendar** — consulta de compromissos dentro do horizonte de planejamento;
+- **Make.com** — integração, filtragem, agregação e orquestração dos dados;
+- **Gemini 2.5 Flash** — análise do contexto e geração de fatos, riscos, recomendações e observações;
+- **Gmail** — entrega da análise ao usuário por e-mail.
 
-O projeto é construído a partir de uma rotina de referência, mas **não deve ser dependente dela**. A rotina utilizada durante o desenvolvimento serve apenas como exemplo de configuração.
+A arquitetura foi inicialmente pensada como um template reutilizável. A rotina utilizada no desenvolvimento representa uma **configuração de referência**, e não uma regra fixa da automação.
 
 ### Princípio central
 
-> **O usuário configura os dados; o sistema fornece a lógica.**
+> **O template é fixo. A configuração é individual. A análise é adaptativa.**
 
-O template deve ser simples para o uso diário e, ao mesmo tempo, suficientemente genérico para que diferentes usuários possam adaptá-lo às próprias rotinas sem modificar a lógica dos cenários de automação.
+E, na divisão de responsabilidades:
+
+> **Automação executa regras; IA analisa e recomenda; usuário decide.**
+
+A solução atual já implementa a coleta de dados do Trello e do Google Calendar, a montagem de um contexto estruturado, a análise com Gemini e o envio do resultado por Gmail. Funcionalidades adicionais previstas na concepção inicial permanecem como evolução futura e não devem ser tratadas como funcionalidades já implementadas.
 
 ---
 
-## 2. Estratégia do projeto
+# 2. Objetivos e princípios da solução
 
-O Meu POS seguirá uma estratégia de **template reutilizável**.
+O POS foi concebido para reduzir o esforço necessário para compreender a própria rotina e identificar o que merece atenção.
 
-Um novo usuário deverá conseguir:
+A solução procura:
 
-- Copiar o template;
-- Configurar seu perfil;
-- Definir sua própria rotina;
-- Definir suas áreas;
-- Configurar preferências e restrições;
-- Criar tarefas e projetos;
-- Conectar suas próprias contas;
-- Utilizar as mesmas automações;
-- Receber recomendações baseadas na própria realidade.
-
-A diferença entre usuários deve estar principalmente nos **dados de configuração**, e não na implementação dos cenários.
+- centralizar tarefas pessoais em um fluxo simples;
+- preservar a separação entre tarefas e compromissos;
+- utilizar a rotina do usuário como configuração;
+- evitar regras dependentes da rotina utilizada no desenvolvimento;
+- reduzir decisões manuais repetitivas;
+- utilizar IA para interpretação, e não como agente autônomo;
+- manter o usuário como responsável pelas decisões;
+- permitir evolução futura sem reescrever a lógica principal.
 
 ### Princípio de parametrização
 
-Nenhuma automação essencial deve depender de:
+As informações específicas do usuário devem estar nos dados de configuração, e não codificadas diretamente no cenário.
 
-- Dias específicos da rotina de referência;
-- Horários específicos da rotina de referência;
-- Áreas específicas;
-- Compromissos específicos;
-- Quantidades fixas de horas disponíveis;
-- Regras pessoais que não estejam configuradas pelo usuário.
+A automação não deve depender, por exemplo, de uma regra como:
 
-Por exemplo, uma automação não deve assumir que o usuário estuda segunda, quarta e sexta à noite. Ela deve consultar a configuração de rotina e identificar os períodos disponíveis daquele usuário.
+```text
+Segunda-feira às 19h = estudar
+```
+
+como regra fixa do sistema.
+
+O horário da rotina de referência pode existir nos dados do usuário, mas a lógica do cenário deve permanecer genérica.
 
 ---
 
-## 3. Arquitetura
+# 3. Rotina de referência utilizada no desenvolvimento
 
-A arquitetura conceitual é:
+A rotina real utilizada durante o desenvolvimento serviu como caso de teste para validar o modelo.
+
+## 3.1 Trabalho
+
+O trabalho ocorre remotamente de segunda a sexta-feira:
 
 ```text
-                    ┌─────────────────────┐
-                    │       TRELLO        │
-                    │                     │
-                    │ Tarefas             │
-                    │ Projetos            │
-                    │ Rotinas             │
-                    │ Configuração         │
-                    └──────────┬──────────┘
-                               │
-                               │ dados
-                               ▼
-                    ┌─────────────────────┐
-                    │        MAKE         │
-                    │                     │
-                    │ Integração           │
-                    │ Regras               │
-                    │ Automação            │
-                    │ Orquestração         │
-                    └──────┬─────────┬────┘
-                           │         │
-                ┌──────────┘         └──────────┐
-                ▼                               ▼
-     ┌──────────────────┐             ┌──────────────────┐
-     │ Google Calendar  │             │        IA        │
-     │                  │             │                  │
-     │ Compromissos     │             │ Análise          │
-     │ Bloqueios        │             │ Planejamento     │
-     │ Disponibilidade  │             │ Recomendações    │
-     └──────────────────┘             └──────────────────┘
+09:00–12:00
+14:00–18:00
 ```
 
-### Responsabilidade de cada componente
+As tarefas profissionais são gerenciadas pelo sistema utilizado pela equipe de trabalho e, por isso, não são duplicadas no POS.
 
-**Trello**
+No contexto do sistema, esses períodos fazem parte da realidade do usuário, mas o POS não administra as tarefas internas do trabalho.
 
-Fonte principal para:
+## 3.2 Estudos
 
-- Tarefas;
-- Projetos;
-- Rotinas;
-- Estados das demandas;
-- Prazos;
-- Prioridades;
-- Estimativas;
-- Configurações do usuário.
+O curso possui aulas ao vivo:
 
-**Google Calendar**
+```text
+Terça-feira: 19:00–21:00
+Quinta-feira: 19:00–21:00
+```
 
-Fonte principal para:
+Também existem períodos destinados a estudos às:
 
-- Compromissos com horário;
-- Eventos recorrentes;
-- Bloqueios de disponibilidade;
-- Outros períodos que não devem ser ocupados por tarefas.
+```text
+Segunda-feira: 19:00–22:00
+Quarta-feira: 19:00–22:00
+Sexta-feira: 19:00–22:00
+```
 
-**Make**
+Além das aulas e estudos recorrentes, existem projetos acadêmicos com prazo de entrega.
 
-Camada de:
+O projeto mensal da disciplina possui, como exemplo real utilizado no sistema, estimativa total de **8 horas** e deadline definido.
 
-- Integração;
-- Automação;
-- Orquestração;
-- Aplicação de regras determinísticas;
-- Comunicação entre Trello, Calendar e IA.
+## 3.3 Academia
 
-**IA**
+A academia ocorre:
 
-Camada de:
+```text
+Segunda a sexta-feira: 12:00–14:00
+Sábado: a partir das 10:30
+```
 
-- Interpretação;
-- Classificação;
-- Planejamento;
-- Decomposição;
-- Análise de conflitos;
-- Identificação de padrões;
-- Recomendações de melhoria.
+Esse período é considerado parte da rotina e não deve ser automaticamente interpretado como disponibilidade para tarefas.
 
-**Usuário**
+## 3.4 Financeiro
 
-Responsável por:
+Existem obrigações recorrentes ao longo do mês, como:
 
-- Configurar sua realidade;
-- Confirmar recomendações;
-- Decidir prioridades;
-- Executar as atividades;
-- Alterar sua rotina quando necessário.
+- faturas de cartão;
+- água;
+- telefone;
+- internet;
+- mensalidade do curso.
 
-### Regra arquitetural
+No caso utilizado durante o desenvolvimento, os vencimentos recorrentes incluem dias 1, 4, 5, 7, 10 e 15, conforme a obrigação.
 
-> **Automação executa regras; IA recomenda; usuário decide.**
+Essas atividades são representadas como cartões de rotina no Trello.
 
-A IA não é a fonte de verdade do sistema e não deve alterar decisões importantes de forma autônoma.
+## 3.5 Vida pessoal
+
+A configuração de referência também considera:
+
+```text
+Sexta-feira após 21:00
+Sábado
+Domingo
+```
+
+como períodos destinados a descanso, vida social e atividades pessoais.
+
+A existência desses períodos reforça que o objetivo do sistema não é preencher todo o tempo disponível com tarefas.
 
 ---
 
 # 4. Modelo conceitual
 
-O POS diferencia quatro conceitos principais:
+O POS diferencia principalmente quatro conceitos.
 
-### Compromisso
+## 4.1 Tarefa
 
-Algo que ocupa um horário específico.
-
-Exemplo:
-
-> Aula terça-feira, das 19h às 21h.
-
-Normalmente pertence ao Google Calendar.
-
-### Tarefa
-
-Algo que precisa ser realizado.
+É uma atividade que precisa ser realizada.
 
 Exemplo:
 
-> Revisar referências do trabalho.
+```text
+Revisar anotações da disciplina
+```
 
-Pertence ao Trello.
+A tarefa pertence ao Trello.
 
-### Rotina
+## 4.2 Projeto
 
-Uma regra recorrente que descreve como o tempo ou as atividades do usuário normalmente funcionam.
+É uma demanda maior que pode envolver múltiplas etapas.
 
 Exemplo:
 
-> Academia de segunda a sexta, das 12h às 14h.
+```text
+Projeto de disciplina — Setembro
+```
 
-A rotina pode ser utilizada para gerar recorrências, identificar bloqueios e orientar a análise.
+Projetos podem utilizar checklist, estimativa, prioridade e deadline.
 
-### Disponibilidade
+## 4.3 Rotina
 
-Períodos em que o usuário pode potencialmente executar tarefas.
+Representa uma atividade ou obrigação recorrente.
 
-A disponibilidade não precisa ser cadastrada manualmente para cada tarefa. Ela pode ser **inferida a partir da rotina, compromissos, bloqueios e preferências do usuário**.
+Exemplo:
+
+```text
+Pagar telefonia
+```
+
+A recorrência é representada atualmente por cartões e respectivas datas no Trello. A geração automática de ocorrências recorrentes ainda não faz parte do cenário implementado.
+
+## 4.4 Compromisso
+
+É um evento que ocupa um horário específico.
+
+Exemplo:
+
+```text
+Aula ao vivo
+```
+
+Os compromissos são obtidos do Google Calendar.
+
+### Separação fundamental
+
+```text
+Trello
+"O que preciso fazer?"
+
+Calendar
+"O que tenho marcado?"
+
+Configuração
+"Como minha rotina normalmente funciona?"
+
+IA
+"O que os dados indicam e o que merece atenção?"
+```
+
+Essa separação evita transformar todo compromisso em tarefa ou toda tarefa em evento de calendário.
 
 ---
 
-# 5. Estrutura do Trello
+# 5. Estrutura atual do Trello
 
-O template utiliza um único board:
+O board utilizado é:
 
 > **🧠 Meu POS — Sistema Operacional Pessoal**
 
-Listas:
+As listas atuais são:
 
 ```text
 ⚙️ Configuração
@@ -213,19 +225,15 @@ Listas:
 🏁 Concluído
 ```
 
-As listas representam o **estado operacional** dos cartões.
+As listas representam principalmente o **estado operacional** dos cartões.
 
-Datas, etiquetas, descrições e, quando disponíveis, campos representam informações de planejamento.
+Datas, labels e descrições representam informações adicionais para organização e análise.
 
 ---
 
 ## 5.1 Configuração
 
-A lista de configuração não participa do fluxo operacional das tarefas.
-
-Ela contém informações que descrevem como o usuário utiliza o sistema e como sua rotina funciona.
-
-Cartões previstos:
+A lista de configuração contém os cartões que descrevem a utilização do sistema:
 
 - 👤 Meu Perfil;
 - 🕐 Minha Rotina;
@@ -233,872 +241,742 @@ Cartões previstos:
 - ⚙️ Minhas Preferências;
 - 📖 Como Usar o POS.
 
-Esses cartões são especialmente importantes para as futuras automações, pois representam a configuração individual do usuário.
+Os quatro primeiros são utilizados atualmente pelo cenário como configuração operacional.
+
+O cartão **📖 Como Usar o POS** funciona principalmente como documentação e não está agregado ao contexto operacional atual.
 
 ---
 
 ## 5.2 Inbox
 
-A **Inbox** é o ponto de entrada para novas demandas.
+A Inbox é o ponto de entrada para novas demandas.
 
-Regra:
+Exemplos de demandas que podem chegar à Inbox:
 
-> Tudo que surgir e ainda não tiver sido processado deve ser colocado na Inbox.
-
-O usuário não precisa decidir imediatamente:
-
-- Área;
-- Tipo;
-- Prioridade;
-- Prazo;
-- Estimativa;
-- Planejamento.
-
-Exemplos:
-
+- Agendar revisão médica anual;
+- Revisar anotações da aula;
 - Comprar material;
-- Fazer trabalho da disciplina;
-- Pagar conta;
-- Pesquisar determinado assunto.
+- Responder e-mail;
+- Pesquisar um livro.
 
-Posteriormente, a Inbox poderá ser processada manualmente ou com apoio da IA.
+A Inbox existe como parte da estrutura do POS, mas o cenário atual **não realiza ainda um processamento automático da Inbox**.
+
+A automação futura poderá utilizar IA para auxiliar na classificação dessas demandas, mas isso não deve ser confundido com o fluxo atualmente implementado.
 
 ---
 
 ## 5.3 Backlog
 
-O Backlog contém demandas que já foram processadas, mas ainda não foram selecionadas para execução no período atual.
+O Backlog contém demandas que ainda não estão no fluxo de execução da semana.
 
-O Backlog não representa necessariamente tarefas atrasadas.
+Também existem no Backlog cartões utilizados como modelos:
 
-Ele representa demandas existentes que ainda não fazem parte do planejamento atual.
+```text
+📌 [MODELO] Tarefa
+📌 [MODELO] Projeto
+📌 [MODELO] Rotina
+```
+
+Esses cartões são explicitamente ignorados pelo cenário de análise.
 
 ---
 
 ## 5.4 Esta Semana
 
-A lista **Esta Semana** representa aquilo que o usuário decidiu que pretende executar durante a semana.
+A lista representa o conjunto de tarefas selecionadas para o planejamento semanal.
 
-Ela é uma decisão de planejamento.
+Ela não representa necessariamente o dia atual.
 
-Uma tarefa pode estar nesta lista mesmo que seu prazo seja posterior à semana atual, caso o usuário ou a IA recomende antecipar sua execução.
+A arquitetura mantém a distinção:
+
+```text
+Lista = estado
+Data = deadline
+```
+
+A automação atual coleta os cartões dessa lista para análise, mas ainda não movimenta cartões automaticamente para ela com base em recomendações da IA.
 
 ---
 
 ## 5.5 Em Andamento
 
-Contém as tarefas que estão sendo efetivamente executadas.
+Representa tarefas ou projetos em execução.
 
-Recomenda-se manter poucas tarefas simultaneamente em andamento para reduzir troca de contexto e favorecer o foco.
+Um exemplo utilizado no desenvolvimento é:
+
+```text
+Projeto de disciplina — Setembro
+```
+
+Outro exemplo é:
+
+```text
+Atualizar documentação técnica do projeto X
+```
+
+A análise pode considerar esses cartões, seus metadados e seus deadlines.
 
 ---
 
 ## 5.6 Concluído
 
-Contém tarefas e projetos finalizados.
+Representa tarefas finalizadas.
 
-Os cartões concluídos não devem ser removidos imediatamente, pois podem servir posteriormente para:
-
-- Revisão semanal;
-- Métricas;
-- Análise de produtividade;
-- Identificação de padrões;
-- Recomendações da IA.
-
----
-
-# 6. Estratégia de planejamento
-
-O POS utiliza a seguinte estratégia:
-
-> **Listas representam estado; datas e informações do cartão representam planejamento.**
-
-Não haverá uma lista física chamada **Hoje**.
-
-A identificação de tarefas para hoje ou próximos dias deverá utilizar:
-
-- Datas;
-- Filtros;
-- Visualizações do Trello;
-- Automações;
-- Análise do calendário.
-
-Exemplos de visões:
-
-- 🎯 Hoje;
-- 📅 Próximos 7 dias;
-- 🔴 Alta prioridade;
-- 🎓 Estudos;
-- 📂 Projetos;
-- ⚠️ Atrasadas.
-
-Isso evita movimentações desnecessárias de cartões.
-
----
-
-# 7. Áreas
-
-As áreas representam os diferentes contextos da vida do usuário.
-
-O template pode apresentar inicialmente:
-
-- 💼 Trabalho;
-- 🎓 Estudos;
-- 🏠 Pessoal;
-- 💰 Financeiro;
-- 🏃 Saúde.
-
-Essas áreas são apenas uma configuração inicial.
-
-O usuário poderá:
-
-- Adicionar áreas;
-- Remover áreas;
-- Renomear áreas;
-- Criar novas categorias conforme sua realidade.
-
-As automações não devem depender da existência dessas áreas específicas.
-
----
-
-# 8. Tipos de cartão
-
-O POS utiliza inicialmente quatro tipos:
-
-- 📌 Tarefa;
-- 📂 Projeto;
-- 🔁 Rotina;
-- ⏳ Aguardando.
-
-## Tarefa
-
-Representa uma ação concreta que pode ser iniciada e concluída.
-
-Exemplo:
-
-```text
-Pagar conta de internet
-```
-
-## Projeto
-
-Representa um objetivo que exige múltiplas ações ou etapas.
-
-Exemplo:
-
-```text
-Trabalho da disciplina
-```
-
-## Rotina
-
-Representa uma atividade ou obrigação recorrente.
-
-Exemplo:
-
-```text
-Compras quinzenais
-```
-
-## Aguardando
-
-Representa uma demanda que depende de uma ação, informação ou pessoa externa antes de poder continuar.
-
----
-
-# 9. Projetos
-
-No MVP, um projeto poderá ser representado por um cartão com checklist de etapas.
-
-Exemplo:
-
-```text
-📂 Trabalho da disciplina
-
-☐ Entender requisitos
-☐ Pesquisar referências
-☐ Criar estrutura
-☐ Desenvolver
-☐ Revisar
-☐ Finalizar
-☐ Entregar
-```
-
-O projeto pode conter:
-
-- Objetivo;
-- Resultado esperado;
-- Etapas;
-- Observações;
-- Prazo;
-- Prioridade;
-- Estimativa.
-
-Caso uma etapa exija acompanhamento individual, ela poderá posteriormente ser transformada em uma tarefa independente.
-
-### Projetos recorrentes
-
-Quando um projeto se repete periodicamente, cada ciclo deve preferencialmente possuir seu próprio cartão.
-
-Exemplo:
-
-```text
-📂 Projeto de disciplina — Setembro
-📂 Projeto de disciplina — Outubro
-📂 Projeto de disciplina — Novembro
-```
-
-Isso permite preservar o histórico, comparar ciclos e analisar padrões de execução.
-
-A geração desses projetos recorrentes poderá ser feita posteriormente pelo Make.
-
----
-
-# 10. Informações dos cartões
-
-O modelo conceitual dos cartões utiliza:
-
-### Área
-
-Identifica o contexto ao qual a demanda pertence.
-
-### Tipo
-
-Identifica se o cartão representa:
-
-- Tarefa;
-- Projeto;
-- Rotina;
-- Aguardando.
-
-### Prioridade
-
-Utiliza inicialmente:
-
-- P1 — Alta;
-- P2 — Média;
-- P3 — Baixa.
-
-### Estimativa
-
-Representa o esforço aproximado:
-
-- 15m;
-- 30m;
-- 1h;
-- 2h+.
-
-### Prazo
-
-Utiliza a data nativa do Trello.
-
-O prazo representa **quando algo precisa estar concluído**, e não necessariamente quando deve ser executado.
-
-### Limitação atual do Trello
-
-Na configuração atual do projeto, o plano gratuito do Trello não disponibiliza os recursos de campos personalizados e modelos nativos utilizados originalmente no desenho.
-
-Como alternativa inicial:
-
-- As informações são mantidas nos cartões;
-- Os cartões-modelo ficam disponíveis no Backlog;
-- Etiquetas podem representar área e prioridade;
-- As descrições seguem uma estrutura padronizada.
-
-A estrutura deverá continuar compatível com uma futura evolução para campos personalizados, caso isso seja necessário.
-
----
-
-# 11. Etiquetas
-
-Como alternativa simples aos campos personalizados, o template poderá utilizar etiquetas.
-
-### Área
-
-- 💼 Trabalho;
-- 🎓 Estudos;
-- 🏠 Pessoal;
-- 💰 Financeiro;
-- 🏃 Saúde.
-
-### Prioridade
-
-- 🔴 P1 — Alta;
-- 🟡 P2 — Média;
-- 🟢 P3 — Baixa.
-
-As etiquetas de área são exemplos iniciais e devem ser adaptáveis.
-
-O sistema não deve assumir que todos os usuários terão as mesmas áreas.
-
----
-
-# 12. Modelos de cartão
-
-O template possui cartões-modelo no Backlog:
-
-- 📌 [MODELO] Tarefa;
-- 📌 [MODELO] Projeto;
-- 📌 [MODELO] Rotina.
-
-Esses cartões servem como referência para criação manual de novos cartões enquanto o plano utilizado não disponibilizar modelos nativos.
-
-## Modelo de tarefa
-
-```text
-📌 Revisar referências do trabalho
-
-Área: Estudos
-Tipo: Tarefa
-Prioridade: P2
-Estimativa: 1h
-Prazo: 10/09
-```
-
-Descrição:
-
-```text
-OBJETIVO
-
-Revisar as referências selecionadas.
-
-RESULTADO ESPERADO
-
-Referências organizadas para utilização no trabalho.
-
-OBSERVAÇÕES
-
-...
-```
-
-## Modelo de projeto
-
-```text
-📂 Trabalho — Engenharia de Software
-
-Área: Estudos
-Tipo: Projeto
-Prioridade: P1
-Estimativa: 2h+
-Prazo: 20/09
-```
-
-Descrição e checklist podem conter:
-
-- Objetivo;
-- Resultado esperado;
-- Etapas;
-- Observações.
-
----
-
-# 13. Configuração do usuário
-
-A configuração é uma das partes mais importantes da arquitetura porque permite que o mesmo template seja utilizado por diferentes pessoas.
-
-## Meu Perfil
-
-Deve conter informações básicas necessárias para personalizar a utilização do sistema.
-
-## Minha Rotina
-
-Deve descrever como o tempo do usuário normalmente é distribuído.
-
-Exemplo de configuração:
-
-```text
-ROTINA FIXA
-
-Segunda a sexta
-
-09:00–12:00
-Trabalho
-
-12:00–14:00
-Disponibilidade pessoal
-
-14:00–18:00
-Trabalho
-
-19:00–22:00
-Estudos
-```
-
-Esses horários são apenas um exemplo.
-
-Outro usuário poderá configurar:
-
-```text
-Segunda a sexta
-
-08:00–17:00
-Trabalho
-
-18:00–20:00
-Faculdade
-
-Sábado
-09:00–12:00
-Estudos
-```
-
-As automações devem funcionar nos dois casos sem alteração de lógica.
-
-### Minha Rotina como fonte de parâmetros
-
-A rotina deve ser tratada como **dados de configuração**, não como código.
-
-O Make e a IA poderão consultar essas informações para:
-
-- Identificar períodos ocupados;
-- Identificar períodos disponíveis;
-- Avaliar conflitos;
-- Planejar tarefas;
-- Avaliar capacidade semanal;
-- Sugerir redistribuição de atividades.
-
-## Minhas Áreas
-
-Define os contextos relevantes para o usuário.
-
-## Minhas Preferências
-
-Pode conter preferências como:
-
-- Horários preferidos para determinadas atividades;
-- Períodos que devem ser protegidos;
-- Limite desejado de tarefas simultâneas;
-- Preferência por tarefas curtas ou longas em determinados períodos;
-- Regras pessoais de planejamento.
-
-## Como Usar o POS
-
-Contém orientações resumidas sobre o funcionamento do sistema.
-
----
-
-# 14. Compromissos, tarefas e disponibilidade
-
-O POS deve manter uma separação clara:
-
-```text
-TRELLO
-"O que preciso fazer?"
-
-CALENDAR
-"O que tenho marcado?"
-
-ROTINA
-"Como meu tempo normalmente funciona?"
-
-IA
-"O que seria melhor fazer considerando
-tarefas, compromissos e disponibilidade?"
-```
-
-O sistema não deverá duplicar desnecessariamente compromissos do Google Calendar como cartões.
-
-### Exemplo
-
-Uma aula às 19h não precisa gerar uma tarefa chamada:
-
-```text
-Assistir aula
-```
-
-se o objetivo for apenas representar que aquele período está ocupado.
-
-Já uma tarefa como:
-
-```text
-Revisar conteúdo da aula
-```
-
-deve existir no Trello se precisar ser realizada.
-
----
-
-# 15. Papel da IA
-
-A IA será utilizada principalmente quando houver necessidade de interpretação, análise ou recomendação.
-
-## 15.1 Processar Inbox
-
-Fluxo:
+Os cartões concluídos podem futuramente ser utilizados para histórico e métricas. Entretanto, o cenário atual de análise coleta somente os cartões das listas:
 
 ```text
 Inbox
-  ↓
-IA
-  ↓
-Classificação e sugestões
-  ↓
-Usuário
-  ↓
+Backlog
+Esta Semana
+Em Andamento
+```
+
+Portanto, o histórico da lista Concluído ainda não participa do `POS_CONTEXT` atual.
+
+---
+
+# 6. Metadados atuais dos cartões
+
+Como o plano utilizado do Trello não oferece os recursos avançados inicialmente previstos para custom fields, a solução utiliza principalmente:
+
+- labels;
+- descrição;
+- nome;
+- data nativa do cartão;
+- lista.
+
+As informações conceitualmente relevantes são:
+
+| Informação | Utilização atual |
+|---|---|
+| Área | Labels e/ou descrição |
+| Prioridade | Labels |
+| Tipo | Descrição |
+| Estimativa | Descrição |
+| Deadline | Data nativa do Trello |
+| Estado | Lista |
+| Observações | Descrição |
+
+### Tipos utilizados nos cartões
+
+A estrutura atual utiliza principalmente:
+
+- Tarefa;
+- Projeto;
+- Rotina.
+
+O tipo **Aguardando**, previsto na concepção inicial, ainda não constitui um fluxo operacional implementado no cenário atual.
+
+### Deadline
+
+A data do cartão é tratada como **deadline**, e não como horário de execução.
+
+O cenário de análise considera somente a parte de data:
+
+```text
+YYYY-MM-DD
+```
+
+O timestamp original e seu fuso horário não são utilizados para decidir se uma tarefa está vencida ou possui deadline futuro.
+
+A regra atual é:
+
+```text
+due < data atual
+→ atrasada
+
+due >= data atual
+→ deadline
+
+due = null
+→ sem prazo informado
+```
+
+---
+
+# 7. Labels e áreas
+
+As labels atualmente utilizadas representam principalmente:
+
+### Áreas
+
+- 💼 Trabalho;
+- 🎓 Estudos;
+- 🏠 Pessoal;
+- 💰 Financeiro;
+- 🏃 Saúde.
+
+### Prioridades
+
+- 🔴 Alta;
+- 🟡 Média;
+- 🟢 Baixa.
+
+Essas categorias fazem parte da configuração utilizada atualmente.
+
+A arquitetura, porém, foi concebida para evitar que a lógica de análise dependa semanticamente de uma quantidade fixa de áreas.
+
+---
+
+# 8. Cartões-modelo
+
+O board possui cartões-modelo para orientar a criação manual de novos cartões:
+
+```text
+📌 [MODELO] Tarefa
+📌 [MODELO] Projeto
+📌 [MODELO] Rotina
+```
+
+O cenário de análise possui filtros que ignoram cartões cujo nome contém o marcador de modelo.
+
+Isso evita que os exemplos utilizados para documentação sejam interpretados como tarefas reais.
+
+---
+
+# 9. Arquitetura atualmente implementada
+
+O fluxo efetivamente implementado no Make é:
+
+```text
 Trello
-```
-
-A IA poderá sugerir:
-
-- Área;
-- Tipo;
-- Prioridade;
-- Estimativa;
-- Prazo;
-- Perguntas necessárias para completar a demanda.
-
-O usuário permanece responsável pela confirmação.
-
----
-
-## 15.2 Decompor projetos
-
-Fluxo:
-
-```text
-Projeto
   ↓
-IA
+Coleta de listas
   ↓
-Etapas sugeridas
+Coleta de cartões
   ↓
-Usuário
+Separação entre configuração e tarefas
   ↓
-Checklist / Tarefas
-```
-
-A IA poderá transformar objetivos maiores em etapas executáveis.
-
----
-
-## 15.3 Planejar a semana
-
-Fluxo:
-
-```text
-Tarefas + Projetos
-        +
-Rotina do usuário
-        +
+Agregação
+  ↓
 Google Calendar
-        ↓
-       IA
-        ↓
-Plano recomendado
-        ↓
-     Usuário
+  ↓
+POS_CONTEXT
+  ↓
+Gemini 2.5 Flash
+  ↓
+Parse do JSON
+  ↓
+Preparação da análise
+  ↓
+Montagem da mensagem
+  ↓
+Gmail
 ```
 
-A IA deve considerar:
+O cenário atualmente implementado é denominado:
 
-- Prazos;
-- Prioridades;
-- Estimativas;
-- Tarefas já planejadas;
-- Compromissos;
-- Períodos disponíveis;
-- Preferências;
-- Capacidade disponível.
-
-A recomendação deve ser adaptada à rotina do usuário, e não à rotina utilizada durante o desenvolvimento.
+> **MyPosRoutineAnalysis**
 
 ---
 
-## 15.4 Identificar risco de atraso
+# 10. Cenário MyPosRoutineAnalysis
 
-A IA poderá analisar a relação entre:
+A estrutura atual utiliza os seguintes módulos principais.
+
+## 10.1 Coleta das listas do Trello
+
+O módulo inicial consulta as listas do board.
+
+São utilizadas as listas:
 
 ```text
-Esforço restante
-+
-Prazo
-+
-Disponibilidade
-+
-Compromissos
+⚙️ Configuração
+📥 Inbox
+📚 Backlog
+📅 Esta Semana
+🔨 Em Andamento
+🏁 Concluído
 ```
 
-e identificar situações como:
+Os IDs são utilizados pelo cenário para identificar em qual estado cada cartão se encontra.
 
-> O projeto exige mais tempo do que a disponibilidade existente antes do prazo.
+## 10.2 Agregação das listas
 
-Nesse caso, poderá recomendar:
+O cenário agrega:
 
-- Antecipar o início;
-- Dividir o projeto;
-- Reduzir tarefas de menor prioridade;
-- Utilizar outro período disponível;
-- Negociar o prazo, quando aplicável.
+- ID da lista;
+- nome da lista.
+
+Isso permite utilizar posteriormente os IDs para filtrar os cartões.
+
+## 10.3 Coleta dos cartões
+
+O cenário consulta os cartões do board utilizando:
+
+```text
+id
+name
+desc
+due
+idList
+labels
+```
+
+Essas informações são suficientes para a análise atual.
+
+## 10.4 Separação da configuração
+
+Os cartões:
+
+- 👤 Meu Perfil;
+- 🕐 Minha Rotina;
+- 🗂️ Minhas Áreas;
+- ⚙️ Minhas Preferências;
+
+são separados dos demais cartões.
+
+O resultado é armazenado como `config`.
+
+## 10.5 Separação das tarefas
+
+O cenário seleciona cartões pertencentes a:
+
+- Inbox;
+- Backlog;
+- Esta Semana;
+- Em Andamento.
+
+Os cartões-modelo são excluídos.
+
+O resultado é armazenado como `tasks`.
+
+## 10.6 Agregação e normalização
+
+Os dados dos cartões são agregados antes da construção do contexto.
+
+Essa etapa organiza os atributos:
+
+```text
+id
+name
+desc
+due
+idList
+labels
+```
+
+A normalização atual é estrutural.
+
+O módulo de agregação não realiza parsing semântico da descrição ou das labels.
+
+Isso é importante porque informações como área, tipo, prioridade e estimativa ainda são interpretadas pela IA a partir do contexto disponível.
 
 ---
 
-## 15.5 Analisar procrastinação
+# 11. Google Calendar
 
-O sistema poderá identificar padrões de comportamento a partir do histórico.
+O cenário consulta o Google Calendar para complementar a visão das tarefas.
+
+A consulta atual utiliza:
+
+```text
+Time Min: data atual
+Time Max: data atual + 7 dias
+Single Events: true
+Order By: startTime
+Limit: 100
+```
+
+O calendário utilizado durante o desenvolvimento é o calendário principal da conta conectada.
+
+Os eventos retornados são agregados com informações como:
+
+- ID;
+- início;
+- fim;
+- status;
+- título;
+- link;
+- localização;
+- tipo;
+- descrição.
+
+### Função do Calendar
+
+O Calendar não é utilizado para criar tarefas.
+
+Ele fornece contexto sobre compromissos já existentes.
 
 Exemplo:
 
-- Projetos recorrentes são iniciados próximos do prazo;
-- O usuário possui disponibilidade anterior ao prazo;
-- As tarefas são concentradas nos últimos dias.
-
-A IA poderá sugerir antecipação ou distribuição gradual do trabalho.
-
-A intenção não é julgar o usuário, mas transformar o histórico em recomendações práticas.
-
----
-
-## 15.6 Revisar a semana
-
-Fluxo:
-
 ```text
-Dados do período
-      ↓
-     IA
-      ↓
-Análise
-      ↓
-Recomendações
+Aula Ao vivo
 ```
 
-A revisão poderá analisar:
-
-- O que foi concluído;
-- O que ficou atrasado;
-- Projetos iniciados;
-- Projetos concluídos;
-- Distribuição de esforço;
-- Conflitos;
-- Padrões recorrentes;
-- Oportunidades de melhoria.
+é um compromisso de calendário e não precisa ser duplicado como cartão do Trello.
 
 ---
 
-# 16. Automação com Make
+# 12. POS_CONTEXT
 
-O Make será utilizado como camada de integração e execução das automações.
+Depois da coleta e agregação, o Make constrói um objeto JSON denominado:
 
-As automações devem priorizar regras:
+> `POS_CONTEXT_v2`
 
-- Simples;
-- Previsíveis;
-- Reutilizáveis;
-- Parametrizadas;
-- Independentes da rotina de referência.
-
-## Princípio de genericidade
-
-Um cenário não deve conter regras como:
+Sua estrutura conceitual é:
 
 ```text
-Se segunda-feira às 19h, criar tarefa de estudo.
+POS_CONTEXT
+├── config
+├── tasks
+└── calendar
 ```
 
-Deve conter lógica equivalente a:
+### Config
+
+Contém informações dos cartões de configuração:
 
 ```text
-Consultar configuração da rotina
-        ↓
-Identificar regra recorrente
-        ↓
-Gerar ocorrência correspondente
-        ↓
-Criar/atualizar cartão
+id
+name
+desc
+due
+idList
+labels
 ```
 
-Assim, a mesma automação pode funcionar para diferentes usuários.
+### Tasks
 
----
-
-# 17. Arquitetura dos cenários genéricos
-
-Os cenários do Make devem seguir, sempre que possível, esta lógica:
+O contexto possui campos destinados a representar:
 
 ```text
-1. Obter configuração
-        ↓
-2. Obter dados operacionais
-        ↓
-3. Aplicar regras genéricas
-        ↓
-4. Consultar Calendar quando necessário
-        ↓
-5. Utilizar IA quando houver necessidade
-        ↓
-6. Gerar recomendação ou executar ação
-        ↓
-7. Atualizar Trello / Calendar
+id
+name
+desc
+due
+idList
+labels
+type
+area
+priority
+estimate
 ```
 
-### Dados que podem ser utilizados
-
-- Configuração do usuário;
-- Rotina;
-- Áreas;
-- Preferências;
-- Tarefas;
-- Projetos;
-- Prazos;
-- Prioridades;
-- Estimativas;
-- Histórico;
-- Compromissos do Calendar.
-
-A rotina completa deve ser considerada sempre que a análise depender de disponibilidade ou capacidade.
-
----
-
-# 18. Automação versus IA
-
-Nem toda automação precisa de IA.
-
-### Preferir automação determinística para:
-
-- Criar ocorrências recorrentes;
-- Identificar prazos vencidos;
-- Mover cartões quando uma regra objetiva for satisfeita;
-- Sincronizar informações;
-- Consultar calendário;
-- Executar tarefas repetitivas.
-
-### Preferir IA para:
-
-- Classificar demandas ambíguas;
-- Decompor projetos;
-- Planejar;
-- Priorizar;
-- Interpretar rotina;
-- Identificar conflitos complexos;
-- Detectar padrões;
-- Sugerir melhorias.
-
-Isso reduz:
-
-- Custo;
-- Complexidade;
-- Latência;
-- Dependência de IA.
-
----
-
-# 19. Google Calendar
-
-O Google Calendar é o sistema de referência para compromissos com horário.
-
-Pode conter:
-
-- Trabalho;
-- Aulas;
-- Academia;
-- Consultas;
-- Viagens;
-- Compromissos pessoais;
-- Outros bloqueios.
-
-A automação poderá consultar o calendário para determinar quais períodos já estão ocupados.
-
-### Disponibilidade
-
-A disponibilidade deverá ser obtida a partir da combinação entre:
+Entretanto, na implementação atual, os campos semânticos:
 
 ```text
-Rotina configurada
-+
-Compromissos do Calendar
-+
-Bloqueios
-+
-Preferências
-+
-Tarefas existentes
+type
+area
+priority
+estimate
 ```
 
-A IA poderá então sugerir onde determinadas tarefas poderiam ser executadas.
+não são preenchidos por uma etapa de transformação determinística no Make.
 
----
+O cenário mantém os dados originais de `desc` e `labels`, e o Gemini interpreta essas informações.
 
-# 20. Recorrências
+Essa distinção é importante para não atribuir ao módulo de normalização uma capacidade que ele atualmente não possui.
 
-Atividades recorrentes devem ser tratadas de forma genérica.
+### Calendar
 
-Exemplos:
-
-- Contas mensais;
-- Compras quinzenais;
-- Atividades semanais;
-- Projetos mensais;
-- Outras obrigações periódicas.
-
-A regra recorrente deve estar associada à configuração do usuário, e não codificada diretamente no cenário.
-
-Exemplo conceitual:
+Contém:
 
 ```text
-ROTINA / RECORRÊNCIA
-
-Periodicidade: mensal
-Dia: definido pelo usuário
-Descrição: pagar determinada obrigação
-Área: definida pelo usuário
+id
+end
+start
+status
+summary
+htmlLink
+location
+eventType
+description
 ```
 
-O Make poderá utilizar essas informações para gerar a ocorrência correspondente.
+---
+
+# 13. Uso da Inteligência Artificial
+
+A IA é utilizada depois que os dados foram coletados e organizados.
+
+O fluxo é:
+
+```text
+Trello
+   +
+Google Calendar
+   +
+Configuração
+        ↓
+   POS_CONTEXT
+        ↓
+Gemini 2.5 Flash
+        ↓
+Análise estruturada
+```
+
+O modelo utilizado atualmente é:
+
+> **Gemini 2.5 Flash**
+
+A IA recebe exclusivamente o contexto produzido pelo cenário.
 
 ---
 
-# 21. Prioridade
+# 14. Regras atuais da análise da IA
 
-O sistema utiliza três níveis:
+O prompt do Gemini estabelece que a IA deve analisar somente o `POS_CONTEXT`.
 
-| Prioridade | Significado |
-|---|---|
-| **P1** | Alta |
-| **P2** | Média |
-| **P3** | Baixa |
+A análise considera:
 
-A prioridade poderá ser definida pelo usuário ou sugerida pela IA.
+- tarefas;
+- prioridades;
+- áreas;
+- tipos;
+- estimativas disponíveis;
+- deadlines;
+- estado dos cartões;
+- configuração;
+- compromissos do Calendar.
 
-A IA não deverá alterar prioridades críticas automaticamente sem decisão ou confirmação do usuário.
+## 14.1 Data atual
 
-O conceito de Eisenhower poderá ser utilizado como referência para análise, mas não será reproduzido integralmente como estrutura do Trello.
+A data atual é fornecida pelo Make utilizando o fuso:
+
+```text
+America/Sao_Paulo
+```
+
+A análise de deadlines utiliza a data, e não o timestamp completo do Trello.
+
+## 14.2 Fatos
+
+Os fatos devem ser objetivos e identificar explicitamente a tarefa.
+
+Exemplo:
+
+```text
+Enviar documentação importante possui prioridade Alta e deadline em 2026-09-04.
+```
+
+A estrutura limita a quantidade de fatos a no máximo 10.
+
+## 14.3 Riscos
+
+Os riscos identificam situações que merecem atenção.
+
+Cada risco deve:
+
+- identificar claramente a tarefa;
+- possuir uma justificativa;
+- evitar simplesmente repetir um fato;
+- não inventar consequências.
+
+A quantidade é limitada a no máximo 5 riscos.
+
+## 14.4 Recomendações
+
+As recomendações possuem a estrutura:
+
+```text
+task
+action
+```
+
+A tarefa deve utilizar exatamente o nome existente nos dados.
+
+As ações permitidas são:
+
+```text
+Priorizar.
+Resolver.
+Revisar.
+Acompanhar.
+Antecipar.
+```
+
+A recomendação não define horário, duração ou agenda.
+
+## 14.5 Planning notes
+
+As `planning_notes` são observações objetivas relacionadas ao planejamento.
+
+Elas não representam necessariamente uma ação.
 
 ---
 
-# 22. Métricas
+# 15. Limites da IA
 
-O MVP utilizará poucas métricas.
+Uma decisão importante do projeto é impedir que a IA complete lacunas com informações inventadas.
 
-Indicadores inicialmente previstos:
+A IA não deve:
 
-- Tarefas concluídas;
-- Tarefas atrasadas;
-- Taxa de conclusão;
-- Projetos em andamento;
-- Projetos iniciados antes do prazo.
+- inventar deadlines;
+- inventar estimativas;
+- inventar prioridades;
+- inventar compromissos;
+- escolher horários de execução;
+- criar eventos;
+- executar tarefas;
+- inventar progresso;
+- inventar dependências;
+- inventar etapas de projetos;
+- diagnosticar procrastinação;
+- afirmar consequências que não estejam sustentadas pelos dados.
 
-Também poderão ser avaliados posteriormente:
+O princípio é:
 
-- Antecedência média de início de projetos;
-- Tempo estimado versus tempo disponível;
-- Distribuição de tarefas por área;
-- Concentração de tarefas próximas aos prazos;
-- Quantidade de tarefas replanejadas;
-- Cumprimento de rotinas.
+> **Se o dado não existe, a IA não deve criá-lo.**
 
-A métrica de antecedência é especialmente relevante para avaliar se o sistema está ajudando o usuário a evitar concentração de trabalho próximo aos prazos.
-
-Não será criado inicialmente um banco de dados específico apenas para métricas.
-
-Sempre que possível, os dados serão obtidos a partir do Trello, Calendar e automações.
+Isso mantém a análise rastreável aos dados disponíveis.
 
 ---
 
-# 23. Dashboard
+# 16. Parse e preparação do resultado
 
-O dashboard será uma camada separada do Trello.
+O retorno do Gemini é solicitado em JSON.
 
-O Trello deverá permanecer focado em:
+O módulo de parsing transforma o resultado em uma estrutura com:
+
+```text
+summary
+facts
+risks
+recommendations
+planning_notes
+```
+
+O módulo seguinte prepara essas estruturas para utilização na mensagem final.
+
+Atualmente, essa etapa está funcionando como esperado e recebe os arrays e textos retornados pelo parser.
+
+---
+
+# 17. Montagem da mensagem
+
+O módulo **Assemble Analysis Message** reúne o resultado da análise.
+
+A estrutura conceitual da mensagem é:
+
+```text
+🧠 Análise do seu POS
+
+Resumo
+
+⚠️ Atenção
+- riscos
+
+💡 Recomendações
+- recomendações
+
+📌 Pontos observados
+- fatos
+
+📅 Observações de planejamento
+- planning notes
+```
+
+As seções são condicionais: somente aparecem quando existe conteúdo correspondente.
+
+O módulo atualmente utiliza uma variável denominada:
+
+```text
+message
+```
+
+e funciona em um ciclo (`roundtrip`).
+
+### Formato para e-mail
+
+O Gmail está configurado para receber:
+
+> **Raw HTML**
+
+Por isso, a mensagem final deve ser construída em HTML real, utilizando elementos como:
+
+```html
+<h2>
+<h3>
+<p>
+<ul>
+<li>
+```
+
+A estrutura lógica da mensagem já está definida; a adequação final do conteúdo do módulo para HTML é uma etapa de formatação, e não uma mudança na arquitetura da análise.
+
+---
+
+# 18. Gmail
+
+O Gmail é utilizado como canal de entrega da análise.
+
+O cenário utiliza uma chamada à API do Gmail para obter o endereço da conta autenticada:
+
+```text
+GET /v1/users/me/profile
+```
+
+O retorno fornece:
+
+```text
+emailAddress
+```
+
+Esse endereço é utilizado como destinatário do relatório.
+
+O envio é realizado pelo módulo:
+
+> **Gmail — Send an Email**
+
+Configuração atual:
+
+```text
+To:
+emailAddress da conta autenticada
+
+Subject:
+🧠 Análise do seu POS
+
+Body:
+mensagem produzida pelo módulo Assemble Analysis Message
+
+Body Type:
+Raw HTML
+```
+
+Não são utilizados atualmente:
+
+- CC;
+- BCC;
+- anexos;
+- outros módulos de entrega.
+
+---
+
+# 19. Estratégia de planejamento
+
+O modelo conceitual continua baseado na separação:
+
+> **Listas representam estado; datas representam deadline; Calendar representa compromissos.**
+
+Por isso, não existe uma lista física chamada:
+
+```text
+Hoje
+```
+
+A lista:
+
+```text
+📅 Esta Semana
+```
+
+representa planejamento semanal.
+
+A identificação de tarefas prioritárias para um determinado período pode ser feita futuramente por análise dos deadlines, prioridades, estado e calendário.
+
+O cenário atual ainda não movimenta cartões automaticamente com base nessas análises.
+
+---
+
+# 20. Métodos de produtividade utilizados
+
+A solução incorpora princípios de diferentes métodos, mas não transforma nenhum deles em uma regra rígida do cenário.
+
+## GTD
+
+A Inbox funciona como ponto de captura de demandas.
 
 ```text
 Capturar
@@ -1112,263 +990,337 @@ Executar
 Concluir
 ```
 
-Enquanto o dashboard e a IA serão responsáveis por:
+O processamento automático da Inbox é uma evolução prevista, não uma funcionalidade já implementada.
+
+## Eisenhower
+
+A prioridade é representada por:
 
 ```text
-Analisar
-   ↓
-Medir
-   ↓
-Recomendar
+Alta
+Média
+Baixa
 ```
 
-O dashboard será desenvolvido posteriormente, após a validação do fluxo principal.
+A prioridade é um dado do cartão e pode ser utilizada pela IA durante a análise.
+
+## Pomodoro
+
+Pomodoro é tratado como técnica de execução, principalmente para estudos e projetos.
+
+O POS não controla atualmente os ciclos Pomodoro.
+
+## Checklists
+
+Projetos podem utilizar checklist para representar suas etapas.
+
+O projeto mensal da disciplina é o principal exemplo utilizado na configuração real.
 
 ---
 
-# 24. Princípios de design
+# 21. Tratamento da procrastinação
+
+A solução procura tratar procrastinação de maneira operacional, sem realizar diagnóstico psicológico.
+
+Os sinais que podem ser observados nos dados incluem:
+
+- proximidade do deadline;
+- estado do projeto;
+- existência ou ausência de estimativa;
+- existência de checklist;
+- quantidade de tarefas acumuladas;
+- distribuição temporal das atividades, quando houver histórico suficiente.
+
+No cenário atualmente implementado, a IA analisa principalmente os dados presentes no contexto atual.
+
+A análise histórica e a identificação automática de padrões de procrastinação ainda são possibilidades de evolução e não devem ser descritas como funcionalidades atuais.
+
+A estratégia atual consiste em tornar as demandas mais visíveis e estruturadas por:
+
+- Inbox;
+- prioridade;
+- deadline;
+- estimativa;
+- estado;
+- checklist;
+- análise assistida.
+
+---
+
+# 22. Comunicação e bem-estar
+
+Demandas de comunicação podem ser registradas como tarefas concretas.
+
+Exemplo:
+
+```text
+Responder email do cliente - orçamento Q3
+```
+
+Isso permite acompanhar uma atividade de comunicação dentro do mesmo fluxo das demais tarefas.
+
+A solução também preserva períodos pessoais na configuração de referência.
+
+O objetivo não é maximizar a ocupação do usuário.
+
+A arquitetura procura considerar conjuntamente:
+
+- trabalho;
+- estudos;
+- atividade física;
+- compromissos;
+- tarefas pessoais;
+- descanso;
+- vida social.
+
+A IA não decide automaticamente quanto o usuário deve trabalhar ou estudar.
+
+---
+
+# 23. O que está implementado atualmente
+
+A situação atual do projeto pode ser resumida da seguinte forma.
+
+### Implementado
+
+- Board Trello;
+- listas operacionais;
+- cartões de configuração;
+- cartões-modelo;
+- tarefas reais de teste;
+- labels de áreas e prioridades;
+- descrições padronizadas;
+- consulta de listas do Trello;
+- consulta de cartões do Trello;
+- filtragem dos cartões-modelo;
+- separação entre configuração e tarefas;
+- consulta do Google Calendar;
+- agregação dos eventos;
+- construção do `POS_CONTEXT_v2`;
+- análise com Gemini 2.5 Flash;
+- retorno estruturado em JSON;
+- parsing da resposta;
+- preparação da análise;
+- montagem da mensagem;
+- obtenção do e-mail pela API do Gmail;
+- envio da análise por Gmail.
+
+### Parcial / em ajuste
+
+- Formatação final da mensagem como HTML para o Gmail.
+
+A arquitetura de envio já está configurada como `Raw HTML`, mas a variável montada no módulo de mensagem precisa utilizar HTML real para que títulos, parágrafos e listas sejam renderizados corretamente.
+
+### Ainda não implementado como automação
+
+As seguintes ideias fazem parte da concepção/evolução do POS, mas não estão no cenário atual:
+
+- processamento automático da Inbox;
+- classificação automática de novos cartões;
+- decomposição automática de projetos em checklists;
+- planejamento semanal automático;
+- escolha automática de horários;
+- criação automática de eventos no Calendar;
+- geração automática de ocorrências de rotinas;
+- movimentação automática de cartões com base em recomendações;
+- análise histórica de procrastinação;
+- revisão semanal baseada no histórico completo;
+- métricas consolidadas;
+- dashboard;
+- banco de dados externo;
+- aplicação própria;
+- SaaS multiusuário.
+
+Essa distinção mantém a documentação coerente com o estado real do projeto.
+
+---
+
+# 24. Arquitetura de responsabilidades
+
+A divisão de responsabilidades atual é:
+
+```text
+┌───────────────────────────────┐
+│            TRELLO             │
+│                               │
+│ Tarefas                       │
+│ Projetos                      │
+│ Estados                       │
+│ Configuração                  │
+│ Prioridades                   │
+│ Deadlines                     │
+└───────────────┬───────────────┘
+                │
+                ▼
+┌───────────────────────────────┐
+│             MAKE              │
+│                               │
+│ Coleta                        │
+│ Filtros                       │
+│ Agregação                     │
+│ Integração                    │
+│ Montagem do contexto          │
+│ Orquestração                  │
+└───────┬─────────────────┬─────┘
+        │                 │
+        ▼                 ▼
+┌───────────────┐   ┌────────────────┐
+│ Google        │   │ Gemini         │
+│ Calendar      │   │ 2.5 Flash      │
+│               │   │                │
+│ Compromissos  │   │ Análise        │
+│ Eventos       │   │ Riscos         │
+│ Horários      │   │ Recomendações  │
+└───────────────┘   └───────┬────────┘
+                            │
+                            ▼
+                    ┌────────────────┐
+                    │     Gmail      │
+                    │                │
+                    │ Entrega        │
+                    └────────────────┘
+                            │
+                            ▼
+                         USUÁRIO
+```
+
+O usuário permanece fora da automação como responsável pela decisão final.
+
+---
+
+# 25. Princípios arquiteturais
 
 ## Simplicidade
 
-Evitar campos, listas e automações sem função clara.
-
-## Reutilização
-
-O template deve poder ser copiado e utilizado por diferentes pessoas.
+A solução deve utilizar somente a quantidade de estrutura necessária para resolver o problema.
 
 ## Parametrização
 
-Diferenças entre usuários devem ser representadas por dados de configuração, e não por alterações nos cenários.
+Informações pessoais devem ser configuráveis.
 
-## Baixa complexidade
+## Reutilização
 
-Priorizar recursos nativos do Trello e ferramentas com planos gratuitos.
-
-## Automação consciente
-
-Automatizar tarefas repetitivas, mas evitar automação excessiva.
-
-## IA como apoio
-
-A IA apoia decisões e recomenda melhorias, mas não substitui a decisão do usuário.
+A mesma estrutura deve poder ser utilizada com diferentes configurações.
 
 ## Separação de responsabilidades
 
+Cada ferramenta possui uma função clara:
+
 ```text
-Trello → Tarefas, projetos e configuração
-Calendar → Compromissos e bloqueios
-Make → Automação e integração
-IA → Análise e recomendação
-Usuário → Decisão e execução
+Trello → tarefas e configuração
+Calendar → compromissos
+Make → integração e regras
+Gemini → análise
+Gmail → comunicação
+Usuário → decisão
 ```
+
+## Automação consciente
+
+Regras determinísticas devem ser implementadas como automação tradicional.
+
+A IA deve ser utilizada quando existe necessidade de interpretação.
+
+## Controle humano
+
+A IA não deve executar decisões pessoais de maneira autônoma.
+
+## Rastreabilidade
+
+As conclusões da IA devem ser fundamentadas nos dados recebidos.
 
 ## Independência da rotina de referência
 
-A rotina utilizada durante o desenvolvimento não deve se transformar em regra de negócio.
+A rotina utilizada no desenvolvimento é uma configuração real de teste, não uma regra de negócio.
 
 ---
 
-# 25. Escopo do MVP
+# 26. Evoluções previstas
 
-## Incluído
+A arquitetura inicial prevê uma evolução gradual.
 
-- Template Trello;
-- Configuração do usuário;
-- Inbox;
-- Backlog;
-- Planejamento semanal;
-- Execução;
-- Projetos;
-- Tarefas;
-- Rotinas;
-- Prioridades;
-- Estimativas;
-- Google Calendar;
-- Make;
-- IA;
-- Processamento assistido da Inbox;
-- Decomposição de projetos;
-- Planejamento assistido;
-- Análise de disponibilidade;
-- Identificação de risco de atraso;
-- Revisão semanal;
-- Métricas básicas;
-- Cenários genéricos e parametrizados.
+Entre as possibilidades futuras estão:
 
-## Fora do MVP
+1. processamento assistido da Inbox;
+2. classificação de tarefas;
+3. decomposição de projetos;
+4. análise de capacidade semanal;
+5. identificação de conflitos;
+6. análise histórica;
+7. revisão semanal;
+8. métricas;
+9. dashboard;
+10. geração de recorrências;
+11. maior integração com Calendar.
 
-- Aplicativo próprio;
-- Sistema de autenticação;
-- Banco de dados externo;
-- SaaS multiusuário;
-- Frontend próprio;
-- Chatbot completo;
-- Automações complexas de hábitos;
-- Gerenciamento das tarefas internas do trabalho;
-- Notificações avançadas;
-- Dashboard avançado;
-- Alteração autônoma de prioridades ou rotina.
-
----
-
-# 26. Critérios para novos cenários do Make
-
-Antes de implementar qualquer cenário, verificar:
-
-### 1. Ele depende de alguma informação específica do usuário?
-
-Se sim, essa informação deve ser transformada em configuração.
-
-### 2. Essa regra poderia funcionar para outro usuário?
-
-Se não, a implementação deve ser revista.
-
-### 3. O cenário precisa realmente de IA?
-
-Se a regra for determinística, preferir automação convencional.
-
-### 4. O cenário consegue obter os dados da configuração?
-
-A lógica não deve depender de valores fixos no cenário.
-
-### 5. O usuário consegue adaptar a rotina sem alterar o cenário?
-
-Esse é um dos principais critérios de aceitação.
-
-### 6. A automação pode executar uma ação incorreta sem confirmação?
-
-Se sim, avaliar se a ação deve se tornar uma recomendação para o usuário em vez de uma alteração automática.
-
----
-
-# 27. Estratégia de validação
-
-Antes de construir todas as automações, o fluxo deverá ser testado com dados reais e fictícios.
-
-Fluxo principal:
+Essas evoluções devem preservar os mesmos princípios:
 
 ```text
-Capturar
-   ↓
-Processar
-   ↓
-Backlog
-   ↓
-Planejar
-   ↓
-Executar
-   ↓
-Concluir
-   ↓
-Revisar
+Dados do usuário
+       ↓
+Regras genéricas
+       ↓
+Análise
+       ↓
+Recomendação
+       ↓
+Decisão do usuário
 ```
 
-A primeira validação deve utilizar a rotina de referência apenas como **caso de teste**.
-
-Depois, o mesmo cenário deverá ser testado com pelo menos uma rotina hipotética diferente para verificar se:
-
-- As automações continuam funcionando;
-- Nenhum horário está codificado;
-- A disponibilidade é recalculada;
-- As recomendações mudam de acordo com o usuário;
-- Nenhum cenário precisa ser editado.
+A evolução não deve transformar dados específicos da rotina atual em regras fixas no código.
 
 ---
 
-# 28. Estratégia de evolução
+# 27. Visão final
 
-A implementação será incremental:
+O Meu POS foi estruturado para funcionar como uma camada de organização e análise sobre ferramentas já utilizadas no cotidiano.
 
-1. Consolidar estrutura do Trello;
-2. Finalizar configuração do usuário;
-3. Definir formato das informações de rotina;
-4. Validar o fluxo manualmente;
-5. Criar dados de teste para diferentes perfis de rotina;
-6. Definir contratos de entrada e saída dos cenários;
-7. Criar automações determinísticas;
-8. Integrar Google Calendar;
-9. Integrar Gemini;
-10. Criar processamento da Inbox;
-11. Criar planejamento assistido;
-12. Criar análise de risco de atraso;
-13. Criar revisão semanal;
-14. Implementar métricas;
-15. Criar dashboard;
-16. Testar o template com diferentes perfis;
-17. Documentar os cenários;
-18. Preparar a versão compartilhável do template.
-
----
-
-# 29. Status atual
-
-**Arquitetura conceitual:** Definida
-
-**Estratégia:** Template reutilizável e parametrizado
-
-**Ferramenta principal:** Trello
-
-**Planejamento:** Listas representam estado; datas e informações representam planejamento
-
-**Calendário:** Google Calendar
-
-**Automação:** Make
-
-**IA candidata:** Gemini
-
-**Estrutura do board:** Criada
-
-**Lista de configuração:** Criada
-
-**Cartões de configuração:** Criados
-
-**Cartões-modelo:** Criados
-
-**Campos personalizados:** Não disponíveis no plano atual do Trello
-
-**Alternativa atual:** Etiquetas e descrições padronizadas
-
-**Princípio de genericidade:** Definido
-
-**Rotina de referência:** Deve ser tratada como configuração de teste, não como regra do sistema
-
-**Próximo passo:** Validar o template com diferentes configurações de rotina antes de construir os cenários do Make
-
----
-
-# 30. Visão final do sistema
-
-O Meu POS deve evoluir para um sistema no qual:
+A lógica central é:
 
 ```text
-                 CONFIGURAÇÃO DO USUÁRIO
-                           │
-          ┌────────────────┼────────────────┐
-          ▼                ▼                ▼
-       Rotina         Preferências        Áreas
-          │                │                │
-          └────────────────┼────────────────┘
-                           ▼
-                  ┌─────────────────┐
-                  │      MAKE       │
-                  │                 │
-                  │ Regras genéricas│
-                  └────────┬────────┘
-                           │
-              ┌────────────┼────────────┐
-              ▼            ▼            ▼
-           TRELLO       CALENDAR        IA
-              │            │            │
-              └────────────┼────────────┘
-                           ▼
-                     RECOMENDAÇÕES
-                           │
-                           ▼
-                        USUÁRIO
+                  CONFIGURAÇÃO
+                       │
+                       ▼
+             ┌─────────────────┐
+             │     TRELLO      │
+             │                 │
+             │    Tarefas      │
+             │    Projetos     │
+             │    Estados      │
+             └────────┬────────┘
+                      │
+                      ▼
+                ┌───────────┐
+                │   MAKE    │
+                │           │
+                │ Integração│
+                │ Regras    │
+                └─────┬─────┘
+                      │
+          ┌───────────┴───────────┐
+          ▼                       ▼
+     CALENDAR                  CONTEXTO
+          │                       │
+          │                       ▼
+          │                 ┌───────────┐
+          └────────────────►│  GEMINI   │
+                            │           │
+                            │ Análise   │
+                            │ Riscos    │
+                            │ Recomenda.│
+                            └─────┬─────┘
+                                  │
+                                  ▼
+                               GMAIL
+                                  │
+                                  ▼
+                               USUÁRIO
 ```
 
-O objetivo não é criar uma rotina ideal universal.
+O objetivo não é criar uma rotina universal ou substituir a capacidade de decisão do usuário.
 
-O objetivo é criar uma **estrutura universal capaz de compreender diferentes rotinas** e ajudar cada usuário a organizar sua própria realidade.
+O objetivo é criar uma estrutura na qual:
 
-> **O template é fixo. A configuração é individual. A análise é adaptativa.**
+> **o template seja fixo, a configuração seja individual e a análise seja adaptativa.**
+
+A solução utiliza automação para reduzir trabalho repetitivo, IA para interpretar informações e o usuário como responsável pelas decisões sobre sua própria rotina.

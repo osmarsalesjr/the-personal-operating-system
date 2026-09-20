@@ -1,0 +1,1870 @@
+{
+    "name": "MyPosRoutineAnalysis",
+    "flow": [
+        {
+            "id": 41,
+            "module": "trello:getBoardLists",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 11099246
+            },
+            "mapper": {
+                "limit": "1000",
+                "board_id": "6a96f4982166ddc8df77804c"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                },
+                "restore": {
+                    "expect": {
+                        "filter": {
+                            "mode": "edit"
+                        },
+                        "board_id": {
+                            "mode": "chose",
+                            "label": "🧠 Meu POS — Sistema Operacional Pessoal (Trello Workspace)"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "trello"
+                            },
+                            "label": "Osmar's Trello connection"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:trello",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "board_id",
+                        "type": "select",
+                        "label": "Board ID",
+                        "required": true
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Maximum number of returned lists",
+                        "required": true
+                    },
+                    {
+                        "name": "filter",
+                        "type": "select",
+                        "label": "Filter",
+                        "validate": {
+                            "enum": [
+                                "all",
+                                "closed",
+                                "open"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": 96,
+            "module": "builtin:BasicAggregator",
+            "version": 1,
+            "parameters": {
+                "feeder": 41
+            },
+            "mapper": {
+                "id": "{{41.id}}",
+                "name": "{{41.name}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0,
+                    "name": "Aggregate Lists"
+                },
+                "restore": {}
+            },
+            "flags": {
+                "stopIfEmpty": true
+            }
+        },
+        {
+            "id": 97,
+            "module": "trello:makeApiCall",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 11099246
+            },
+            "mapper": {
+                "url": "/boards/6a96f4982166ddc8df77804c/cards?fields=id,name,desc,due,idList,labels",
+                "method": "GET",
+                "headers": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0,
+                    "name": "Get Board Cards"
+                },
+                "restore": {
+                    "expect": {
+                        "qs": {
+                            "mode": "chose"
+                        },
+                        "method": {
+                            "mode": "chose",
+                            "label": "GET"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null
+                            ]
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "trello"
+                            },
+                            "label": "Osmar's Trello connection (osmarjunior4)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:trello",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "url",
+                        "type": "text",
+                        "label": "URL",
+                        "required": true
+                    },
+                    {
+                        "name": "method",
+                        "type": "select",
+                        "label": "Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "GET",
+                                "POST",
+                                "PUT",
+                                "PATCH",
+                                "DELETE"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "headers",
+                        "spec": [
+                            {
+                                "name": "key",
+                                "type": "text",
+                                "label": "Key"
+                            },
+                            {
+                                "name": "value",
+                                "type": "text",
+                                "label": "Value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Headers"
+                    },
+                    {
+                        "name": "qs",
+                        "spec": [
+                            {
+                                "name": "key",
+                                "type": "text",
+                                "label": "Key"
+                            },
+                            {
+                                "name": "value",
+                                "type": "text",
+                                "label": "Value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Query String"
+                    },
+                    {
+                        "name": "body",
+                        "type": "any",
+                        "label": "Body"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 100,
+            "module": "builtin:BasicFeeder",
+            "version": 1,
+            "parameters": {},
+            "filter": null,
+            "mapper": {
+                "array": "{{97.body}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 900,
+                    "y": 0,
+                    "name": "Iterator CONFIG"
+                },
+                "restore": {},
+                "expect": [
+                    {
+                        "mode": "edit",
+                        "name": "array",
+                        "spec": [],
+                        "type": "array",
+                        "label": "Array",
+                        "editable": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 101,
+            "module": "builtin:BasicAggregator",
+            "version": 1,
+            "parameters": {
+                "feeder": 100,
+                "target": "99.config"
+            },
+            "filter": {
+                "name": "Somente cards de configuração",
+                "conditions": [
+                    [
+                        {
+                            "a": "{{100.name}}",
+                            "b": "👤 Meu Perfil",
+                            "o": "text:equal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{100.name}}",
+                            "b": "🕐 Minha Rotina",
+                            "o": "text:equal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{100.name}}",
+                            "b": "🗂️ Minhas Áreas",
+                            "o": "text:equal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{100.name}}",
+                            "b": "⚙️ Minhas Preferências",
+                            "o": "text:equal"
+                        }
+                    ]
+                ]
+            },
+            "mapper": {
+                "id": "{{100.id}}",
+                "due": "{{100.due}}",
+                "desc": "{{100.desc}}",
+                "name": "{{100.name}}",
+                "idList": "{{100.idList}}",
+                "labels": "{{100.labels}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1200,
+                    "y": 0,
+                    "name": "Aggregate CONFIG"
+                },
+                "restore": {}
+            },
+            "flags": {
+                "stopIfEmpty": true
+            }
+        },
+        {
+            "id": 102,
+            "module": "trello:makeApiCall",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 11099246
+            },
+            "filter": null,
+            "mapper": {
+                "url": "/boards/6a96f4982166ddc8df77804c/cards?fields=id,name,desc,due,idList,labels",
+                "method": "GET",
+                "headers": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1500,
+                    "y": 0,
+                    "name": "Collect TASKS"
+                },
+                "restore": {
+                    "expect": {
+                        "qs": {
+                            "mode": "chose"
+                        },
+                        "method": {
+                            "mode": "chose",
+                            "label": "GET"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null
+                            ]
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "trello"
+                            },
+                            "label": "Osmar's Trello connection (osmarjunior4)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:trello",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "url",
+                        "type": "text",
+                        "label": "URL",
+                        "required": true
+                    },
+                    {
+                        "name": "method",
+                        "type": "select",
+                        "label": "Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "GET",
+                                "POST",
+                                "PUT",
+                                "PATCH",
+                                "DELETE"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "headers",
+                        "spec": [
+                            {
+                                "name": "key",
+                                "type": "text",
+                                "label": "Key"
+                            },
+                            {
+                                "name": "value",
+                                "type": "text",
+                                "label": "Value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Headers"
+                    },
+                    {
+                        "name": "qs",
+                        "spec": [
+                            {
+                                "name": "key",
+                                "type": "text",
+                                "label": "Key"
+                            },
+                            {
+                                "name": "value",
+                                "type": "text",
+                                "label": "Value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Query String"
+                    },
+                    {
+                        "name": "body",
+                        "type": "any",
+                        "label": "Body"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 103,
+            "module": "builtin:BasicFeeder",
+            "version": 1,
+            "parameters": {},
+            "filter": null,
+            "mapper": {
+                "array": "{{102.body}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1800,
+                    "y": 0,
+                    "name": "Iterator TASKS"
+                },
+                "restore": {},
+                "expect": [
+                    {
+                        "mode": "edit",
+                        "name": "array",
+                        "spec": [],
+                        "type": "array",
+                        "label": "Array",
+                        "editable": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 104,
+            "module": "builtin:BasicAggregator",
+            "version": 1,
+            "parameters": {
+                "feeder": 103
+            },
+            "filter": {
+                "name": "Somente cards de tarefas sem modelos",
+                "conditions": [
+                    [
+                        {
+                            "a": "{{103.idList}}",
+                            "b": "{{96.array[2].id}}",
+                            "o": "text:equal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Tarefa",
+                            "o": "text:notequal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Projeto",
+                            "o": "text:notequal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Rotina",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{103.idList}}",
+                            "b": "{{96.array[3].id}}",
+                            "o": "text:equal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Tarefa",
+                            "o": "text:notequal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Projeto",
+                            "o": "text:notequal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Rotina",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{103.idList}}",
+                            "b": "{{96.array[4].id}}",
+                            "o": "text:equal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Tarefa",
+                            "o": "text:notequal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Projeto",
+                            "o": "text:notequal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Rotina",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{103.idList}}",
+                            "b": "{{96.array[5].id}}",
+                            "o": "text:equal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Tarefa",
+                            "o": "text:notequal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Projeto",
+                            "o": "text:notequal"
+                        },
+                        {
+                            "a": "{{103.name}}",
+                            "b": "📌 [MODELO] Rotina",
+                            "o": "text:notequal"
+                        }
+                    ]
+                ]
+            },
+            "mapper": {
+                "id": "{{103.id}}",
+                "due": "{{103.due}}",
+                "desc": "{{103.desc}}",
+                "name": "{{103.name}}",
+                "idList": "{{103.idList}}",
+                "labels": "{{103.labels}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2100,
+                    "y": 0,
+                    "name": "Aggregate TASKS"
+                },
+                "restore": {}
+            },
+            "flags": {
+                "stopIfEmpty": true
+            }
+        },
+        {
+            "id": 107,
+            "module": "builtin:BasicFeeder",
+            "version": 1,
+            "parameters": {},
+            "filter": null,
+            "mapper": {
+                "array": "{{104.array}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2400,
+                    "y": 0,
+                    "name": "Iterator TASKS NORMALIZATION"
+                },
+                "restore": {},
+                "expect": [
+                    {
+                        "mode": "edit",
+                        "name": "array",
+                        "spec": [],
+                        "type": "array",
+                        "label": "Array",
+                        "editable": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 108,
+            "module": "builtin:BasicAggregator",
+            "version": 1,
+            "parameters": {
+                "feeder": 107
+            },
+            "mapper": {
+                "id": "{{107.id}}",
+                "due": "{{107.due}}",
+                "desc": "{{107.desc}}",
+                "name": "{{107.name}}",
+                "idList": "{{107.idList}}",
+                "labels": "{{107.labels}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2700,
+                    "y": 0,
+                    "name": "Aggregate NORMALIZED TASKS"
+                },
+                "restore": {
+                    "extra": {
+                        "feeder": {
+                            "label": "Iterator TASKS NORMALIZATION"
+                        },
+                        "target": {
+                            "label": "Custom"
+                        }
+                    }
+                }
+            },
+            "flags": {
+                "stopIfEmpty": true
+            }
+        },
+        {
+            "id": 89,
+            "module": "google-calendar:searchEvents",
+            "version": 5,
+            "parameters": {
+                "__IMTCONN__": 11099261
+            },
+            "mapper": {
+                "limit": "100",
+                "orderBy": "startTime",
+                "timeMax": "{{addDays(parseDate(formatDate(now; \"YYYY-MM-DD\"; \"America/Sao_Paulo\"); \"YYYY-MM-DD\"; \"America/Sao_Paulo\"); 7)}}",
+                "timeMin": "{{parseDate(formatDate(now; \"YYYY-MM-DD\"; \"America/Sao_Paulo\"); \"YYYY-MM-DD\"; \"America/Sao_Paulo\")}}",
+                "calendar": "osmar.junior.227142@a.fecaf.com.br",
+                "singleEvents": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 3000,
+                    "y": 0
+                },
+                "restore": {
+                    "expect": {
+                        "orderBy": {
+                            "mode": "chose",
+                            "label": "Start Time (ascending)"
+                        },
+                        "calendar": {
+                            "mode": "chose",
+                            "label": "osmar.junior.227142@a.fecaf.com.br (Primary Calendar)"
+                        },
+                        "eventTypes": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            },
+                            "label": "Osmar's Google connection"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "calendar",
+                        "type": "select",
+                        "label": "Calendar ID",
+                        "required": true
+                    },
+                    {
+                        "name": "timeMin",
+                        "time": true,
+                        "type": "date",
+                        "label": "Start Date"
+                    },
+                    {
+                        "name": "timeMax",
+                        "time": true,
+                        "type": "date",
+                        "label": "End Date"
+                    },
+                    {
+                        "name": "updatedMin",
+                        "time": true,
+                        "type": "date",
+                        "label": "Updated from"
+                    },
+                    {
+                        "name": "singleEvents",
+                        "type": "boolean",
+                        "label": "Single Events",
+                        "required": true
+                    },
+                    {
+                        "name": "q",
+                        "type": "text",
+                        "label": "Query"
+                    },
+                    {
+                        "name": "eventTypes",
+                        "type": "select",
+                        "label": "Event Types",
+                        "multiple": true,
+                        "validate": {
+                            "enum": [
+                                "default",
+                                "fromGmail",
+                                "focusTime",
+                                "outOfOffice",
+                                "workingLocation"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "orderBy",
+                        "type": "select",
+                        "label": "Order By",
+                        "validate": {
+                            "enum": [
+                                "startTime",
+                                "updated"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 94,
+            "module": "builtin:BasicAggregator",
+            "version": 1,
+            "parameters": {
+                "feeder": 89
+            },
+            "mapper": {
+                "id": "{{89.id}}",
+                "end": "{{89.end}}",
+                "start": "{{89.start}}",
+                "status": "{{89.status}}",
+                "summary": "{{89.summary}}",
+                "htmlLink": "{{89.htmlLink}}",
+                "location": "{{89.location}}",
+                "eventType": "{{89.eventType}}",
+                "description": "{{89.description}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 3300,
+                    "y": 0
+                },
+                "restore": {
+                    "extra": {
+                        "feeder": {
+                            "label": "Google Calendar - Search Events [89]"
+                        },
+                        "target": {
+                            "label": "Custom"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "id": 99,
+            "module": "json:CreateJSON",
+            "version": 1,
+            "parameters": {
+                "type": 497750,
+                "space": ""
+            },
+            "mapper": {
+                "tasks": "{{108.array}}",
+                "config": "{{101.array}}",
+                "calendar": "{{94.array}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 3600,
+                    "y": 0,
+                    "name": "POS_CONTEXT"
+                },
+                "restore": {
+                    "expect": {
+                        "tasks": {
+                            "mode": "edit"
+                        },
+                        "config": {
+                            "mode": "edit"
+                        },
+                        "calendar": {
+                            "mode": "edit"
+                        }
+                    },
+                    "parameters": {
+                        "type": {
+                            "label": "POS_CONTEXT_v2"
+                        },
+                        "space": {
+                            "label": "Empty"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "type",
+                        "type": "udt",
+                        "label": "Data structure",
+                        "required": true
+                    },
+                    {
+                        "name": "space",
+                        "type": "select",
+                        "label": "Indentation",
+                        "validate": {
+                            "enum": [
+                                "tab",
+                                "2",
+                                "4"
+                            ]
+                        }
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "config",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "id",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "desc",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "due",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "idList",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "labels",
+                                    "spec": {
+                                        "type": "text"
+                                    },
+                                    "type": "array",
+                                    "label": null
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": null
+                    },
+                    {
+                        "name": "tasks",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "id",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "desc",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "due",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "idList",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "labels",
+                                    "spec": {
+                                        "type": "text"
+                                    },
+                                    "type": "array",
+                                    "label": null
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "area",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "priority",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "estimate",
+                                    "type": "text",
+                                    "label": null
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": null
+                    },
+                    {
+                        "name": "calendar",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "id",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "end",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "start",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "status",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "summary",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "htmlLink",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "location",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "eventType",
+                                    "type": "text",
+                                    "label": null
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "text",
+                                    "label": null
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": null
+                    }
+                ]
+            }
+        },
+        {
+            "id": 113,
+            "module": "gemini-ai:simpleTextPrompt",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "model": "gemini-2.5-flash",
+                "textPrompt": "Você é o componente de análise do sistema “Meu POS — Sistema Operacional Pessoal”. \r\n \r\nSeu papel é ANALISAR os dados recebidos e produzir fatos, riscos, recomendações e observações de planejamento. \r\n \r\nPRINCÍPIO FUNDAMENTAL: \r\n- A automação executa regras. \r\n- A IA analisa e recomenda. \r\n- O usuário decide. \r\n- Você NÃO executa ações. \r\n- Você NÃO agenda tarefas. \r\n- Você NÃO escolhe horários. \r\n- Você NÃO altera tarefas. \r\n- Você NÃO cria compromissos. \r\n- Você NÃO move cards. \r\n- Você NÃO inventa informações ausentes. \r\n \r\n================================================== \r\n1. FONTE ÚNICA DE DADOS \r\n================================================== \r\n \r\nVocê receberá um objeto JSON chamado POS_CONTEXT. \r\n \r\nAnalise EXCLUSIVAMENTE as informações presentes nesse objeto. \r\n \r\nNão utilize conhecimento externo para completar, corrigir ou inferir informações pessoais do usuário. \r\n \r\nNão invente: \r\n- deadlines; \r\n- datas; \r\n- horários; \r\n- durações; \r\n- prioridades; \r\n- áreas; \r\n- tipos; \r\n- disponibilidade; \r\n- progresso; \r\n- dependências; \r\n- consequências; \r\n- compromissos; \r\n- regras de rotina; \r\n- preferências; \r\n- estados que não estejam explicitamente presentes. \r\n \r\nSe uma informação não estiver disponível de forma explícita, use null ou não produza o item correspondente. \r\n \r\nOs cards cujo nome contenha “[MODELO]” devem ser ignorados completamente na análise. \r\n \r\n================================================== \r\n2. ESTRUTURA DOS DADOS \r\n================================================== \r\n \r\nAs tarefas possuem os seguintes campos: \r\n \r\n- id \r\n- name \r\n- desc \r\n- due \r\n- idList \r\n- labels \r\n \r\nA configuração possui os campos: \r\n \r\n- id \r\n- name \r\n- desc \r\n- due \r\n- idList \r\n- labels \r\n \r\nOs eventos do Google Calendar possuem: \r\n \r\n- id \r\n- end \r\n- start \r\n- status \r\n- summary \r\n- htmlLink \r\n- location \r\n- eventType \r\n- description \r\n \r\n================================================== \r\n3. EXTRAÇÃO SEMÂNTICA DAS TAREFAS \r\n================================================== \r\n \r\nPara cada tarefa, extraia informações semânticas SOMENTE quando estiverem explicitamente presentes em desc ou labels. \r\n \r\n3.1 TYPE \r\n \r\nExtraia o tipo a partir de uma linha no formato: \r\n \r\nTipo: ... \r\n \r\nExemplos: \r\nTipo: Tarefa \r\nTipo: Projeto \r\nTipo: Rotina \r\n \r\nSe não houver uma linha explícita “Tipo:”, use: \r\n \r\n\"type\": null \r\n \r\nNão deduza o tipo pelo nome da tarefa. \r\n \r\n-------------------------------------------------- \r\n \r\n3.2 AREA \r\n \r\nExtraia a área a partir de uma linha no formato: \r\n \r\nArea: ... \r\n \r\nExemplos: \r\nArea: Estudos \r\nArea: Trabalho \r\nArea: Pessoal \r\nArea: Financeiro \r\nArea: Saude \r\n \r\nOs labels podem ser utilizados apenas como confirmação da área explicitamente indicada. \r\n \r\nNão invente ou deduza uma área com base apenas no nome da tarefa. \r\n \r\nSe a área não estiver explicitamente identificada: \r\n \r\n\"area\": null \r\n \r\n-------------------------------------------------- \r\n \r\n3.3 PRIORITY \r\n \r\nA prioridade deve ser extraída EXCLUSIVAMENTE dos labels com os seguintes nomes: \r\n \r\n- Alta Prioridade \r\n- Média Prioridade \r\n- Baixa Prioridade \r\n \r\nMapeamento: \r\n \r\n\"Alta Prioridade\" \r\n→ \"Alta\" \r\n \r\n\"Média Prioridade\" \r\n→ \"Média\" \r\n \r\n\"Baixa Prioridade\" \r\n→ \"Baixa\" \r\n \r\nNão deduza prioridade pelo nome da tarefa, deadline, tipo, área ou conteúdo da descrição. \r\n \r\nSe não houver um desses labels: \r\n \r\n\"priority\": null \r\n \r\n-------------------------------------------------- \r\n \r\n3.4 ESTIMATE \r\n \r\nExtraia a estimativa EXCLUSIVAMENTE de uma linha da descrição contendo: \r\n \r\nEstimativa: ... \r\n \r\nou: \r\n \r\nEstimativa total: ... \r\n \r\nPreserve o valor informado. \r\n \r\nExemplos: \r\n \r\n\"Estimativa: 30min\" \r\n→ \"estimate\": \"30min\" \r\n \r\n\"Estimativa: 2h\" \r\n→ \"estimate\": \"2h\" \r\n \r\n\"Estimativa total: 8h\" \r\n→ \"estimate\": \"8h\" \r\n \r\nNão converta unidades. \r\n \r\nNão calcule estimativas. \r\n \r\nNão estime duração com base no nome ou tipo da tarefa. \r\n \r\nSe não houver estimativa explícita: \r\n \r\n\"estimate\": null \r\n \r\n================================================== \r\n4. DEADLINE E STATUS TEMPORAL \r\n================================================== \r\n \r\nO campo \"due\" representa SOMENTE o deadline da tarefa. \r\n \r\nTrate o deadline como uma DATA, não como horário de execução. \r\n \r\nIgnore completamente: \r\n- horário; \r\n- timezone; \r\n- hora do timestamp; \r\n- horário embutido no campo due. \r\n \r\nConsidere somente os primeiros 10 caracteres de \"due\", no formato: \r\n \r\nYYYY-MM-DD \r\n \r\nA data atual deve ser obtida por: \r\n \r\n{{formatDate(now; \"YYYY-MM-DD\"; \"America/Sao_Paulo\")}} \r\n \r\nCompare somente as datas. \r\n \r\nRegras: \r\n \r\nSe: \r\ndue < current_date \r\n \r\nentão: \r\n \r\n\"temporal_status\": \"overdue\" \r\n \r\nSe: \r\ndue >= current_date \r\n \r\nentão: \r\n \r\n\"temporal_status\": \"deadline\" \r\n \r\nSe: \r\ndue = null \r\n \r\nentão: \r\n \r\n\"temporal_status\": null \r\n \r\nIMPORTANTE: \r\n \r\nNunca transforme um deadline em horário de execução. \r\n \r\nNunca diga que uma tarefa deve ser executada em determinado horário com base no campo due. \r\n \r\n-------------------------------------------------- \r\n \r\n4.1 FORMATO DAS DATAS \r\n \r\nQuando precisar mencionar uma data, utilize exclusivamente o formato: \r\n \r\nYYYY-MM-DD \r\n \r\nNunca utilize referências relativas como: \r\n \r\n- hoje \r\n- amanhã \r\n- ontem \r\n- esta semana \r\n- próxima semana \r\n- neste mês \r\n- próximo mês \r\n- depois \r\n- mais tarde \r\n \r\nMesmo quando uma tarefa possuir deadline igual à data atual, escreva a data explicitamente no formato YYYY-MM-DD. \r\n \r\nExemplo: \r\n \r\nINCORRETO: \r\n\"deadline para hoje\" \r\n \r\nCORRETO: \r\n\"deadline em 2026-09-15\" \r\n \r\nNão utilize expressões relativas de tempo em nenhum campo da resposta. \r\n \r\n================================================== \r\n5. FACTS \r\n================================================== \r\n \r\nProduza fatos objetivos e diretamente sustentados pelos dados. \r\n \r\nCada fact deve conter: \r\n \r\n- task \r\n- area \r\n- priority \r\n- type \r\n- estimate \r\n- temporal_status \r\n- reason \r\n \r\nFormato: \r\n \r\n{ \r\n  \"task\": \"Nome da tarefa\", \r\n  \"area\": \"Estudos\", \r\n  \"priority\": \"Alta\", \r\n  \"type\": \"Tarefa\", \r\n  \"estimate\": \"30min\", \r\n  \"temporal_status\": \"deadline\", \r\n  \"reason\": \"A tarefa possui deadline em 2026-09-15.\" \r\n} \r\n \r\nRegras: \r\n \r\n- Sempre identifique a tarefa pelo nome no campo \"task\". \r\n- \"reason\" deve mencionar o nome da tarefa de forma natural quando estiver explicando o fato. \r\n- Não escreva construções genéricas como \"A tarefa possui...\" sem identificar qual tarefa está sendo mencionada. \r\n- Não faça julgamentos. \r\n- Não faça recomendações dentro de facts. \r\n- Não invente consequências. \r\n- Não transforme interpretação em fato. \r\n- Não use referências temporais relativas. \r\n- Use datas YYYY-MM-DD quando necessário. \r\n- \"reason\" deve explicar objetivamente por que o fato foi identificado. \r\n- Se uma informação não existir, use null. \r\n \r\nExemplo correto: \r\n \r\n{ \r\n  \"task\": \"Enviar documentação importante\", \r\n  \"area\": \"Pessoal\", \r\n  \"priority\": \"Alta\", \r\n  \"type\": \"Tarefa\", \r\n  \"estimate\": null, \r\n  \"temporal_status\": \"overdue\", \r\n  \"reason\": \"Enviar documentação importante possui prioridade Alta e deadline em 2026-09-04.\" \r\n} \r\n \r\nO limite é de 10 facts. \r\n \r\n10 é o número MÁXIMO, não obrigatório. \r\n \r\nProduza menos de 10 quando houver menos fatos relevantes. \r\n \r\nNão preencha artificialmente o limite. \r\n \r\n================================================== \r\n5.1. SELEÇÃO E ORDEM DOS FACTS \r\n================================================== \r\n \r\nO limite de 10 facts deve priorizar informações temporalmente relevantes. \r\n \r\nQuando houver mais de 10 fatos possíveis, utilize esta ordem: \r\n \r\n1. tarefas com temporal_status \"overdue\" e prioridade Alta; \r\n2. tarefas com temporal_status \"deadline\" e prioridade Alta; \r\n3. tarefas com temporal_status \"overdue\" e prioridade Média; \r\n4. tarefas com temporal_status \"deadline\" e prioridade Média; \r\n5. tarefas com informações objetivas relevantes adicionais. \r\n \r\nDentro de cada grupo, priorize tarefas que possuam informações temporais explícitas. \r\n \r\nNão utilize uma posição de fact apenas para repetir uma informação genérica de prioridade ou estimativa quando existirem tarefas com deadlines relevantes que ainda não tenham sido representadas. \r\n \r\nO objetivo é representar os fatos mais relevantes presentes no POS_CONTEXT, e não simplesmente preencher 10 posições. \r\n \r\n================================================== \r\n6. RISKS \r\n================================================== \r\n \r\nIdentifique riscos somente quando houver evidência objetiva no POS_CONTEXT. \r\n \r\nCada risk deve estar relacionado a uma tarefa específica. \r\n \r\nSempre identifique a tarefa pelo nome no campo \"task\". \r\n \r\nNão utilize descrições genéricas como \"A tarefa possui...\" sem informar qual tarefa está sendo analisada. \r\n \r\nNão repita em risks um fato que já tenha sido apresentado em facts, a menos que o risk contenha uma informação adicional relevante para justificar a existência do risco. \r\n \r\nUm risk deve acrescentar uma interpretação de risco sustentada pelos dados, e não apenas duplicar o mesmo texto de um fact. \r\n \r\nO campo \"level\" deve seguir EXATAMENTE estas regras: \r\n \r\nHIGH: \r\nUse \"high\" somente quando existir pelo menos uma das seguintes condições: \r\n \r\n1. A tarefa possui temporal_status \"overdue\" E prioridade \"Alta\". \r\n \r\nOU \r\n \r\n2. A descrição contém explicitamente uma indicação de urgência. \r\n \r\nOU \r\n \r\n3. A descrição contém explicitamente uma indicação de que a tarefa não pode ser adiada. \r\n \r\nMEDIUM: \r\nUse \"medium\" quando existir pelo menos uma das seguintes condições: \r\n \r\n1. A tarefa possui temporal_status \"deadline\" E prioridade \"Alta\". \r\n \r\nOU \r\n \r\n2. A tarefa possui temporal_status \"overdue\" E prioridade \"Média\". \r\n \r\nOU \r\n \r\n3. Existe outra evidência objetiva de risco na descrição, sem atender aos critérios de HIGH. \r\n \r\nLOW: \r\nUse \"low\" somente quando existir uma evidência objetiva de risco, mas nenhuma das condições de HIGH ou MEDIUM for atendida. \r\n \r\nNão classifique uma tarefa como HIGH apenas porque possui prioridade Alta. \r\n \r\nNão classifique uma tarefa como HIGH apenas porque possui deadline. \r\n \r\nNão classifique uma tarefa como HIGH apenas porque é um Projeto. \r\n \r\nNão classifique uma tarefa como HIGH apenas porque possui uma estimativa. \r\n \r\nNão invente consequências. \r\n \r\nA razão deve mencionar somente os fatos que sustentam a classificação. \r\n \r\nA razão deve identificar claramente a tarefa pelo nome e não deve simplesmente repetir um fact sem acrescentar informação relevante para a classificação do risco. \r\n \r\nExemplo: \r\n \r\n{ \r\n  \"task\": \"Pagar internet\", \r\n  \"level\": \"medium\", \r\n  \"reason\": \"Pagar internet possui prioridade Alta e deadline em 2026-09-15.\" \r\n} \r\n \r\nExemplo: \r\n \r\n{ \r\n  \"task\": \"Pagar telefonia\", \r\n  \"level\": \"high\", \r\n  \"reason\": \"Pagar telefonia possui prioridade Alta e deadline em 2026-09-10, anterior à data atual de 2026-09-15.\" \r\n} \r\n \r\nExemplo: \r\n \r\n{ \r\n  \"task\": \"Enviar documentação importante\", \r\n  \"level\": \"high\", \r\n  \"reason\": \"Enviar documentação importante possui indicação explícita de urgência e de que não pode ser adiada.\" \r\n} \r\n \r\nO limite é de 5 riscos. \r\n \r\n5 é o número MÁXIMO, não obrigatório. \r\n \r\nSe não houver riscos suficientemente sustentados pelos dados: \r\n \r\n\"risks\": [] \r\n \r\n================================================== \r\n7. RECOMMENDATIONS \r\n================================================== \r\n \r\nAs recomendações devem ser extremamente curtas, objetivas e baseadas exclusivamente nos dados. \r\n \r\nVocê NÃO deve escolher horários. \r\n \r\nVocê NÃO deve indicar dias. \r\n \r\nVocê NÃO deve definir duração. \r\n \r\nVocê NÃO deve criar agenda. \r\n \r\nVocê NÃO deve afirmar disponibilidade. \r\n \r\nVocê NÃO deve executar nenhuma ação. \r\n \r\nVocê NÃO deve agrupar várias tarefas em uma recomendação. \r\n \r\nCada recommendation DEVE conter exatamente os seguintes campos: \r\n \r\n- task \r\n- action \r\n \r\nO campo \"task\" DEVE conter o nome da tarefa exatamente como identificado nos dados. \r\n \r\nO campo \"action\" DEVE conter EXATAMENTE UMA das cinco opções permitidas abaixo: \r\n \r\n\"Priorizar.\" \r\n\"Resolver.\" \r\n\"Revisar.\" \r\n\"Acompanhar.\" \r\n\"Antecipar.\" \r\n \r\nNão crie variações. \r\n \r\nNão combine ações. \r\n \r\nNão acrescente complementos. \r\n \r\nNão acrescente justificativas. \r\n \r\nNão acrescente advérbios. \r\n \r\nNão acrescente referências temporais. \r\n \r\nO campo \"action\" não deve conter o nome da tarefa. \r\n \r\nO campo \"action\" não deve conter qualquer texto além de uma das cinco opções permitidas. \r\n \r\nA seleção das recomendações deve priorizar, nesta ordem: \r\n \r\n1. tarefas overdue com prioridade Alta; \r\n2. tarefas com deadline em current_date e prioridade Alta; \r\n3. tarefas overdue com prioridade Média; \r\n4. tarefas com deadline futuro e prioridade Alta; \r\n5. outras tarefas que possuam evidência objetiva suficiente para recomendação. \r\n \r\nEssa ordem serve apenas para selecionar quais tarefas serão representadas quando houver mais de 5 candidatas. \r\n \r\nNão crie recomendação apenas para preencher o limite. \r\n \r\nExemplo permitido: \r\n \r\n{ \r\n  \"task\": \"Pagar internet\", \r\n  \"action\": \"Resolver.\" \r\n} \r\n \r\nExemplo permitido: \r\n \r\n{ \r\n  \"task\": \"Projeto de disciplina — Setembro\", \r\n  \"action\": \"Priorizar.\" \r\n} \r\n \r\nExemplos proibidos: \r\n \r\n\"Priorizar e resolver.\" \r\n \r\n\"Resolver com urgência.\" \r\n \r\n\"Priorizar hoje.\" \r\n \r\n\"Focar para cumprir o deadline.\" \r\n \r\n\"Priorizar Pagar internet.\" \r\n \r\nO limite é de 5 recomendações. \r\n \r\n5 é o número MÁXIMO, não obrigatório. \r\n \r\nSe não houver recomendações suficientemente sustentadas: \r\n \r\n\"recommendations\": [] \r\n \r\n================================================== \r\n8. PLANNING_NOTES \r\n================================================== \r\n \r\nPlanning_notes é OPCIONAL e deve ser utilizado somente quando existir uma observação objetiva de planejamento que não esteja adequadamente representada em facts. \r\n \r\nNa dúvida, retorne: \r\n \r\n\"planning_notes\": [] \r\n \r\nNão utilize planning_notes para repetir facts. \r\n \r\nNão utilize planning_notes para listar ou agrupar várias tarefas. \r\n \r\nNão utilize planning_notes para resumir quantidade de tarefas. \r\n \r\nNão utilize planning_notes para avaliar o volume de trabalho. \r\n \r\nNão utilize planning_notes para avaliar a carga do usuário. \r\n \r\nNão utilize planning_notes para diagnosticar comportamento. \r\n \r\nNão utilize planning_notes para inferir procrastinação. \r\n \r\nNão utilize planning_notes para inferir falta de tempo. \r\n \r\nNão utilize planning_notes para inferir excesso de trabalho. \r\n \r\nNão utilize planning_notes para inferir disponibilidade. \r\n \r\nEvite completamente avaliações como: \r\n \r\n- significativo; \r\n- grande; \r\n- alto volume; \r\n- excesso; \r\n- sobrecarga; \r\n- muito; \r\n- pouco; \r\n- considerável; \r\n- intenso; \r\n- elevado; \r\n- acumulado; \r\n- grande quantidade; \r\n- múltiplas tarefas. \r\n \r\nMesmo que várias tarefas possuam a mesma característica, NÃO transforme isso automaticamente em uma planning_note. \r\n \r\nNão produza uma planning_note apenas porque existem: \r\n- várias tarefas overdue; \r\n- várias tarefas sem deadline; \r\n- várias tarefas de uma mesma área; \r\n- várias tarefas de alta prioridade. \r\n \r\nFacts já representam essas informações. \r\n \r\nPlanning_notes deve retornar [] quando não houver uma observação adicional realmente necessária para o planejamento. \r\n \r\nO limite é de 2 planning_notes. \r\n \r\n2 é o número MÁXIMO, não obrigatório. \r\n \r\n================================================== \r\n9. GOOGLE CALENDAR \r\n================================================== \r\n \r\nUse os dados do Calendar somente para fatos objetivos. \r\n \r\nVocê pode identificar conflitos quando uma tarefa ou informação explicitamente indicar incompatibilidade com um compromisso existente. \r\n \r\nNão invente conflitos. \r\n \r\nNão assuma que um evento bloqueia todo o período antes ou depois dele. \r\n \r\nNão assuma disponibilidade fora dos eventos. \r\n \r\nNão escolha horários para tarefas. \r\n \r\nNão transforme eventos do Calendar em tarefas. \r\n \r\nNão crie compromissos. \r\n \r\nNão altere o Calendar. \r\n \r\nQuando mencionar eventos, utilize somente informações presentes nos dados recebidos. \r\n \r\n================================================== \r\n10. ROTINA E PREFERÊNCIAS \r\n================================================== \r\n \r\nA configuração do POS pode conter informações sobre: \r\n \r\n- rotina; \r\n- áreas; \r\n- preferências; \r\n- perfil. \r\n \r\nUtilize essas informações somente quando forem explicitamente relevantes. \r\n \r\nNão invente regras. \r\n \r\nNão transforme uma rotina em disponibilidade garantida. \r\n \r\nNão suponha que todo horário fora da rotina esteja livre. \r\n \r\nNão faça diagnósticos comportamentais. \r\n \r\nNão atribua procrastinação, falta de disciplina ou outros comportamentos ao usuário. \r\n \r\nSe uma preferência não estiver explicitamente configurada, não invente uma. \r\n \r\n================================================== \r\n11. PROJETOS \r\n================================================== \r\n \r\nPara tarefas com: \r\n \r\n\"type\": \"Projeto\" \r\n \r\nutilize somente informações explicitamente presentes. \r\n \r\nNão invente: \r\n \r\n- etapas; \r\n- progresso; \r\n- percentual concluído; \r\n- dependências; \r\n- subtarefas; \r\n- datas intermediárias; \r\n- divisão do projeto; \r\n- esforço adicional. \r\n \r\nSe existir uma estimativa total, preserve-a exatamente como informada. \r\n \r\nExemplo: \r\n \r\n\"Estimativa total: 8h\" \r\n \r\ndeve resultar em: \r\n \r\n\"estimate\": \"8h\" \r\n \r\nNão transforme automaticamente uma estimativa total em etapas ou sessões. \r\n \r\n================================================== \r\n12. SUMMARY \r\n================================================== \r\n \r\nProduza um resumo objetivo com no máximo 2 frases. \r\n \r\nO resumo deve ser baseado exclusivamente nos dados recebidos. \r\n \r\nNão use linguagem emocional. \r\n \r\nNão faça julgamentos sobre o usuário. \r\n \r\nNão use referências temporais relativas. \r\n \r\nNão invente causas ou consequências. \r\n \r\nNão utilize termos como: \r\n \r\n- \"hoje\"; \r\n- \"amanhã\"; \r\n- \"grande volume\"; \r\n- \"significativo\"; \r\n- \"excesso\"; \r\n- \"sobrecarga\"; \r\n \r\nsalvo quando forem informações explicitamente documentadas e necessárias. \r\n \r\nQuando mencionar deadlines, utilize YYYY-MM-DD. \r\n \r\nO summary deve ser uma síntese factual e natural dos principais dados identificados. \r\n \r\nNão utilize nomes de campos internos do sistema como: \r\n- temporal_status; \r\n- idList; \r\n- POS_CONTEXT; \r\n- task; \r\n- priority; \r\n- estimate. \r\n \r\nQuando possível, traduza esses conceitos para linguagem natural. \r\n \r\nPor exemplo: \r\n \r\nINCORRETO: \r\n\"Existem tarefas com temporal_status overdue.\" \r\n \r\nCORRETO: \r\n\"Existem tarefas com deadlines anteriores a 2026-09-15.\" \r\n \r\nNão utilize expressões avaliativas sobre volume, carga ou intensidade. \r\n \r\n================================================== \r\n13. PLANNING NOTES E RECOMMENDATIONS NÃO SÃO OBRIGATÓRIOS \r\n================================================== \r\n \r\nOs limites definidos neste prompt são limites máximos. \r\n \r\nNão tente preencher automaticamente: \r\n \r\n- 10 facts; \r\n- 5 risks; \r\n- 5 recommendations; \r\n- 2 planning_notes. \r\n \r\nA qualidade e a sustentação pelos dados são mais importantes que a quantidade. \r\n \r\nÉ perfeitamente válido retornar: \r\n \r\n\"facts\": [] \r\n\"risks\": [] \r\n\"recommendations\": [] \r\n\"planning_notes\": [] \r\n \r\nquando não houver informações suficientes. \r\n \r\n================================================== \r\n14. FORMATO OBRIGATÓRIO DA RESPOSTA \r\n================================================== \r\n \r\nA saída deve ser JSON puro (raw JSON). \r\n \r\nA resposta deve conter SOMENTE um único objeto JSON válido. \r\n \r\nÉ PROIBIDO utilizar Markdown. \r\n \r\nÉ PROIBIDO utilizar code fence. \r\n \r\nÉ PROIBIDO utilizar três crases consecutivas (```). \r\n \r\nÉ PROIBIDO escrever ```json. \r\n \r\nÉ PROIBIDO escrever ```. \r\n \r\nÉ PROIBIDO adicionar qualquer texto antes do primeiro caractere \"{\". \r\n \r\nÉ PROIBIDO adicionar qualquer texto depois do último caractere \"}\". \r\n \r\nNão escreva: \r\n- \"Aqui está o JSON\" \r\n- \"Resultado:\" \r\n- explicações \r\n- comentários \r\n- introduções \r\n- conclusões \r\n \r\nA resposta deve começar EXATAMENTE com: \r\n \r\n{ \r\n \r\nA resposta deve terminar EXATAMENTE com: \r\n \r\n} \r\n \r\nExemplo CORRETO: \r\n \r\n{ \r\n  \"summary\": \"Texto\", \r\n  \"facts\": [], \r\n  \"risks\": [], \r\n  \"recommendations\": [], \r\n  \"planning_notes\": [] \r\n} \r\n \r\nExemplo INCORRETO: \r\n \r\n```json \r\n{ \r\n  \"summary\": \"Texto\", \r\n  \"facts\": [], \r\n  \"risks\": [], \r\n  \"recommendations\": [], \r\n  \"planning_notes\": [] \r\n} \r\n \r\n================================================== \r\n15. SCHEMA OBRIGATÓRIO \r\n================================================== \r\n \r\nUse exatamente esta estrutura: \r\n \r\n{ \r\n  \"summary\": \"string\", \r\n  \"facts\": [ \r\n    { \r\n      \"task\": \"string\", \r\n      \"area\": \"string ou null\", \r\n      \"priority\": \"string ou null\", \r\n      \"type\": \"string ou null\", \r\n      \"estimate\": \"string ou null\", \r\n      \"temporal_status\": \"overdue, deadline ou null\", \r\n      \"reason\": \"string\" \r\n    } \r\n  ], \r\n  \"risks\": [ \r\n    { \r\n      \"task\": \"string\", \r\n      \"level\": \"low, medium ou high\", \r\n      \"reason\": \"string\" \r\n    } \r\n  ], \r\n  \"recommendations\": [ \r\n    { \r\n      \"task\": \"string\", \r\n      \"action\": \"string\" \r\n    } \r\n  ], \r\n  \"planning_notes\": [ \r\n    \"string\" \r\n  ] \r\n} \r\n \r\nNão adicione propriedades extras. \r\n \r\n================================================== \r\n16. VALIDAÇÃO FINAL ANTES DE RESPONDER \r\n================================================== \r\n \r\nAntes de gerar a resposta final, verifique internamente: \r\n \r\n1. A resposta é um único objeto JSON? \r\n2. Começa com \"{\"? \r\n3. Termina com \"}\"? \r\n4. Não possui Markdown? \r\n5. Não possui ```json? \r\n6. Não possui texto antes ou depois do JSON? \r\n7. Todos os objetos estão corretamente fechados? \r\n8. Todos os arrays estão corretamente fechados? \r\n9. Não existem vírgulas inválidas? \r\n10. Os cards [MODELO] foram ignorados? \r\n11. Todas as informações vieram exclusivamente do POS_CONTEXT? \r\n12. Nenhum deadline foi convertido em horário de execução? \r\n13. Datas estão no formato YYYY-MM-DD? \r\n14. Não existem \"hoje\", \"amanhã\", \"ontem\", \"esta semana\" ou \"próxima semana\"? \r\n15. Nenhuma prioridade foi inventada? \r\n16. Nenhuma área foi inventada? \r\n17. Nenhum tipo foi inventado? \r\n18. Nenhuma estimativa foi inventada? \r\n19. Nenhum progresso foi inventado? \r\n20. Nenhuma dependência foi inventada? \r\n21. Nenhuma consequência foi inventada? \r\n22. Nenhuma disponibilidade foi inventada? \r\n23. Nenhum horário foi recomendado? \r\n24. Nenhum dia foi recomendado? \r\n25. Nenhuma recommendation repete o nome da tarefa no campo \"action\"? \r\n26. Risks não foram criados apenas para preencher o limite? \r\n27. Recommendations não foram criadas apenas para preencher o limite? \r\n28. Planning_notes não contém avaliações subjetivas? \r\n29. O resumo possui no máximo 2 frases? \r\n30. Facts possui no máximo 10 itens? \r\n31. Risks possui no máximo 5 itens? \r\n32. Recommendations possui no máximo 5 itens? \r\n33. Planning_notes possui no máximo 2 itens? \r\n34. Toda recommendation possui exatamente uma das cinco actions permitidas: \r\n    \"Priorizar.\" \r\n    \"Resolver.\" \r\n    \"Revisar.\" \r\n    \"Acompanhar.\" \r\n    \"Antecipar.\" \r\n \r\n35. Nenhuma recommendation combina duas ações. \r\n36. Nenhuma recommendation adiciona complementos à action. \r\n37. planning_notes pode ser [] e deve ser [] quando apenas repetiria facts ou agregaria tarefas. \r\n38. planning_notes não contém avaliações sobre quantidade, volume, carga ou intensidade. \r\n39. summary não utiliza nomes de campos internos do sistema. \r\n40. A resposta não contém nenhuma sequência de três crases (```). \r\n41. O primeiro caractere da resposta é \"{\" \r\n42. O último caractere da resposta é \"}\" \r\n43. Não existe texto fora do objeto JSON. \r\n44. A resposta é JSON puro, não Markdown. \r\n45. Cada fact identifica explicitamente a tarefa pelo nome no campo \"reason\". \r\n46. Nenhum fact utiliza uma construção genérica como \"A tarefa possui...\" sem identificar a tarefa. \r\n47. Cada risk identifica explicitamente a tarefa pelo nome. \r\n48. Nenhum risk apenas repete um fact sem acrescentar informação relevante para a classificação do risco. \r\n49. Cada recommendation contém os campos \"task\" e \"action\". \r\n50. O campo \"action\" contém exatamente uma das cinco ações permitidas e nenhum outro texto. \r\n \r\nSe qualquer uma dessas condições falhar, corrija a saída antes de responder. \r\n \r\n================================================== \r\n17. DADOS PARA ANÁLISE \r\n================================================== \r\n \r\nAnalise exclusivamente o seguinte POS_CONTEXT: \r\n \r\n{{99.json}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 3900,
+                    "y": 0
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "8d659875aae3693b"
+                },
+                "restore": {
+                    "expect": {
+                        "model": {
+                            "label": "Gemini 2.5 FlashApplies smart reasoning to fast data tasks while ensuring quick response times"
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "model",
+                        "type": "select",
+                        "label": "Model",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "gemini-2.5-flash",
+                                "gemini-3.8-flash",
+                                "gemini-3.7-flash",
+                                "gemini-3.6-flash",
+                                "gemini-3.5-flash",
+                                "gemini-3.1-pro-preview",
+                                "gemini-3-flash-preview",
+                                "gemini-2.5-pro"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "textPrompt",
+                        "type": "text",
+                        "label": "Text prompt",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 114,
+            "module": "json:ParseJSON",
+            "version": 1,
+            "parameters": {
+                "type": 500169
+            },
+            "mapper": {
+                "json": "{{113.result}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 4200,
+                    "y": 0,
+                    "name": "Parse Gemini JSON"
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "4e6c775528fa0d9b"
+                },
+                "restore": {
+                    "parameters": {
+                        "type": {
+                            "label": "GeminiAnalysisResponse"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "type",
+                        "type": "udt",
+                        "label": "Data structure"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "json",
+                        "type": "text",
+                        "label": "JSON string",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "help": "",
+                        "name": "summary",
+                        "type": "text",
+                        "label": null,
+                        "default": null,
+                        "required": false,
+                        "multiline": true
+                    },
+                    {
+                        "help": "",
+                        "name": "facts",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "help": "",
+                                    "name": "task",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                },
+                                {
+                                    "help": "",
+                                    "name": "area",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                },
+                                {
+                                    "help": "",
+                                    "name": "priority",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                },
+                                {
+                                    "help": "",
+                                    "name": "type",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                },
+                                {
+                                    "help": "",
+                                    "name": "estimate",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                },
+                                {
+                                    "help": "",
+                                    "name": "temporal_status",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                },
+                                {
+                                    "help": "",
+                                    "name": "reason",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                }
+                            ],
+                            "type": "collection",
+                            "required": false
+                        },
+                        "type": "array",
+                        "label": null,
+                        "required": false
+                    },
+                    {
+                        "help": "",
+                        "name": "risks",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "help": "",
+                                    "name": "task",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                },
+                                {
+                                    "help": "",
+                                    "name": "level",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                },
+                                {
+                                    "help": "",
+                                    "name": "reason",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                }
+                            ],
+                            "type": "collection",
+                            "required": false
+                        },
+                        "type": "array",
+                        "label": null,
+                        "required": false
+                    },
+                    {
+                        "help": "",
+                        "name": "recommendations",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "help": "",
+                                    "name": "task",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                },
+                                {
+                                    "help": "",
+                                    "name": "action",
+                                    "type": "text",
+                                    "label": null,
+                                    "default": null,
+                                    "required": false,
+                                    "multiline": false
+                                }
+                            ],
+                            "type": "collection",
+                            "required": false
+                        },
+                        "type": "array",
+                        "label": null,
+                        "required": false
+                    },
+                    {
+                        "help": "",
+                        "name": "planning_notes",
+                        "spec": {
+                            "type": "text",
+                            "default": null,
+                            "required": false,
+                            "multiline": false
+                        },
+                        "type": "array",
+                        "label": null,
+                        "required": false
+                    }
+                ]
+            }
+        },
+        {
+            "id": 115,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "scope": "roundtrip",
+                "variables": [
+                    {
+                        "name": "summary",
+                        "value": "{{114.summary}}"
+                    },
+                    {
+                        "name": "facts",
+                        "value": "{{114.facts}}"
+                    },
+                    {
+                        "name": "risks",
+                        "value": "{{114.risks}}"
+                    },
+                    {
+                        "name": "recommendations",
+                        "value": "{{114.recommendations}}"
+                    },
+                    {
+                        "name": "planning_notes",
+                        "value": "{{114.planning_notes}}"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 4500,
+                    "y": 0,
+                    "name": "Prepare Analysis Output"
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "92087d3fe6e3405"
+                },
+                "restore": {
+                    "expect": {
+                        "scope": {
+                            "label": "One cycle"
+                        },
+                        "variables": {
+                            "items": [
+                                null,
+                                null,
+                                null,
+                                null,
+                                null
+                            ]
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Variable name",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "any",
+                                    "label": "Variable value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Variable"
+                        },
+                        "type": "array",
+                        "label": "Variables",
+                        "validate": {
+                            "unique": {
+                                "by": "name"
+                            },
+                            "minItems": 1
+                        }
+                    },
+                    {
+                        "name": "scope",
+                        "type": "select",
+                        "label": "Variable lifetime",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "roundtrip",
+                                "execution"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "summary",
+                        "type": "any",
+                        "label": "summary"
+                    },
+                    {
+                        "name": "facts",
+                        "type": "any",
+                        "label": "facts"
+                    },
+                    {
+                        "name": "risks",
+                        "type": "any",
+                        "label": "risks"
+                    },
+                    {
+                        "name": "recommendations",
+                        "type": "any",
+                        "label": "recommendations"
+                    },
+                    {
+                        "name": "planning_notes",
+                        "type": "any",
+                        "label": "planning_notes"
+                    }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 116,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "scope": "roundtrip",
+                "variables": [
+                    {
+                        "name": "message",
+                        "value": "{{\"<h2>🧠 Análise do seu POS</h2>\" + \"<p>\" + 115.summary + \"</p>\" + if(length(115.risks) > 0; \"<h3>⚠️ Atenção</h3>\"\"<ul><li>\" + join(map(115.risks; \"reason\"); \"</li><li>\") + \"</li></ul>\"; ) + if(length(115.recommendations) > 0; \"<h3>💡 Recomendações</h3>\"\"<ul><li>\" + join(map(115.recommendations; \"task\"); \"</li><li>\") + \"</li></ul>\"; ) + if(length(115.facts) > 0; \"<h3>📌 Pontos observados</h3>\"\"<ul><li>\" + join(map(115.facts; \"reason\"); \"</li><li>\") + \"</li></ul>\"; ) + if(length(115.planning_notes) > 0; \"<h3>📅 Observações de planejamento</h3>\"\"<ul><li>\" + join(115.planning_notes; \"</li><li>\") + \"</li></ul>\"; )}}"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 4800,
+                    "y": 0,
+                    "name": "Assemble Analysis Message"
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "274d54306ef9da93"
+                },
+                "restore": {
+                    "expect": {
+                        "scope": {
+                            "label": "One cycle"
+                        },
+                        "variables": {
+                            "items": [
+                                null
+                            ]
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Variable name",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "any",
+                                    "label": "Variable value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Variable"
+                        },
+                        "type": "array",
+                        "label": "Variables",
+                        "validate": {
+                            "unique": {
+                                "by": "name"
+                            },
+                            "minItems": 1
+                        }
+                    },
+                    {
+                        "name": "scope",
+                        "type": "select",
+                        "label": "Variable lifetime",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "roundtrip",
+                                "execution"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "message",
+                        "type": "any",
+                        "label": "message"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 10004,
+            "module": "google-email:makeAnApiCall",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 11163676
+            },
+            "mapper": {
+                "url": "/v1/users/me/profile",
+                "method": "GET",
+                "headers": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 5100,
+                    "y": 0
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "8522abdd40ed1c52"
+                },
+                "restore": {
+                    "expect": {
+                        "qs": {
+                            "mode": "chose"
+                        },
+                        "method": {
+                            "mode": "chose",
+                            "label": "GET"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null
+                            ]
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-email"
+                            },
+                            "label": "Osmar's Gmail connection (osmar.junior.227142@a.fecaf.com.br)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-email",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "url",
+                        "type": "text",
+                        "label": "URL",
+                        "required": true
+                    },
+                    {
+                        "name": "method",
+                        "type": "select",
+                        "label": "Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "GET",
+                                "POST",
+                                "PUT",
+                                "PATCH",
+                                "DELETE"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "headers",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "key",
+                                    "type": "text",
+                                    "label": "Key"
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Header"
+                        },
+                        "type": "array",
+                        "label": "Headers"
+                    },
+                    {
+                        "name": "qs",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "key",
+                                    "type": "text",
+                                    "label": "Key"
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Parameter"
+                        },
+                        "type": "array",
+                        "label": "Query string"
+                    },
+                    {
+                        "name": "body",
+                        "type": "any",
+                        "label": "Body"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 10005,
+            "module": "google-email:sendAnEmail",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 11163676
+            },
+            "mapper": {
+                "to": "{{10004.body.emailAddress}}",
+                "content": "{{116.message}}",
+                "subject": "🧠 Análise do seu POS",
+                "bodyType": "rawHtml"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 5400,
+                    "y": 0
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "bff0227463749779"
+                },
+                "restore": {
+                    "expect": {
+                        "cc": {
+                            "mode": "chose"
+                        },
+                        "to": {
+                            "mode": "edit"
+                        },
+                        "bcc": {
+                            "mode": "chose"
+                        },
+                        "from": {
+                            "mode": "chose"
+                        },
+                        "bodyType": {
+                            "label": "Raw HTML"
+                        },
+                        "attachments": {
+                            "mode": "chose"
+                        },
+                        "emailHeaders": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-email"
+                            },
+                            "label": "Osmar's Gmail connection (osmar.junior.227142@a.fecaf.com.br)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-email",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "to",
+                        "spec": {
+                            "name": "value",
+                            "type": "email",
+                            "label": "Recipient email address",
+                            "required": true,
+                            "validate": true
+                        },
+                        "type": "array",
+                        "label": "To",
+                        "required": true
+                    },
+                    {
+                        "name": "subject",
+                        "type": "text",
+                        "label": "Subject"
+                    },
+                    {
+                        "name": "bodyType",
+                        "type": "select",
+                        "label": "Body type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "rawHtml",
+                                "collection"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "attachments",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "filename",
+                                    "type": "filename",
+                                    "label": "File name",
+                                    "required": true,
+                                    "semantic": "file:name"
+                                },
+                                {
+                                    "name": "data",
+                                    "type": "buffer",
+                                    "label": "Data",
+                                    "required": true,
+                                    "semantic": "file:data"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Attachment"
+                        },
+                        "type": "array",
+                        "label": "Attachments"
+                    },
+                    {
+                        "name": "from",
+                        "type": "select",
+                        "label": "From"
+                    },
+                    {
+                        "name": "cc",
+                        "spec": {
+                            "name": "value",
+                            "type": "email",
+                            "label": "Recipient email address"
+                        },
+                        "type": "array",
+                        "label": "CC recipients"
+                    },
+                    {
+                        "name": "bcc",
+                        "spec": {
+                            "name": "value",
+                            "type": "email",
+                            "label": "Recipient email address"
+                        },
+                        "type": "array",
+                        "label": "BCC recipients"
+                    },
+                    {
+                        "name": "emailHeaders",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "key",
+                                    "type": "text",
+                                    "label": "Key",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Email header"
+                        },
+                        "type": "array",
+                        "label": "Additional email headers"
+                    },
+                    {
+                        "name": "content",
+                        "type": "text",
+                        "label": "Content"
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "us2.make.com",
+        "notes": []
+    }
+}
